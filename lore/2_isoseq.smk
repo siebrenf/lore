@@ -158,7 +158,20 @@ rule isoseq_collapse:
         bam=expand("{pbmm2_dir}/{{sample}}.bam", **config),  # bam=rules.pbmm2_align.output.bam,
     output:
         gff=expand("{isoseq_collapse_dir}/{{sample}}.unsorted.gff", **config),
-        abundance=expand("{isoseq_collapse_dir}/{{sample}}.abundance.txt", **config),
+        abundance=expand(
+            "{isoseq_collapse_dir}/{{sample}}.unsorted.abundance.txt", **config
+        ),
+        # unrequested files:
+        fasta=expand("{isoseq_collapse_dir}/{{sample}}.unsorted.fasta", **config),
+        fastq=expand("{isoseq_collapse_dir}/{{sample}}.unsorted.fastq", **config),
+        flnc_count=expand(
+            "{isoseq_collapse_dir}/{{sample}}.unsorted.flnc_count.txt", **config
+        ),
+        group=expand("{isoseq_collapse_dir}/{{sample}}.unsorted.group.txt", **config),
+        stats=expand(
+            "{isoseq_collapse_dir}/{{sample}}.unsorted.read_stat.txt", **config
+        ),
+        json=expand("{isoseq_collapse_dir}/{{sample}}.unsorted.report.json", **config),
     log:
         expand("{isoseq_collapse_dir}/{{sample}}_collapse.log", **config),
     threads: 8  # TODO: check

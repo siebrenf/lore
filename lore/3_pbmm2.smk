@@ -7,14 +7,13 @@ rule pbmm2_index:
     """
     input:
         ref_fasta=config["genome_fasta"],  # rules.genome.output.fasta,
-        # check=expand("{pigeon_dir}/{genome}_prepared.txt",**config),  # to make sure pigeon_prepare ran before
     output:
         mmi=expand("{pbmm2_dir}/{genome}.mmi", **config),
     log:
         expand("{pbmm2_dir}/{genome}.log", **config),
-    threads: 12  # TODO: check
+    threads: 3
     resources:
-        mem_mb=40_000,  # TODO: check
+        mem_mb=12_000,
     shell:
         """
         pbmm2 index \
@@ -41,9 +40,9 @@ rule pbmm2_align:
         bam=expand("{pbmm2_dir}/{{sample}}.bam", **config),
     log:
         expand("{pbmm2_dir}/{{sample}}.log", **config),
-    threads: 4  # TODO: check
+    threads: 12
     resources:
-        mem_mb=40_000,  # TODO: check
+        mem_mb=20_000,
     shell:
         """
         pbmm2 align \

@@ -12,4 +12,11 @@ include: "4_pigeon.smk"
 
 rule all:
     input:
-        [f'{config["pigeon_dir"]}/{sample}.gff' for sample in config["samples"]],
+        [
+            f'{config["seurat_dir"]}/{sample}/{sample}.info.csv'
+            for sample in config["samples"]
+        ],
+        [
+            f'{config["pigeon_dir"]}/{sample}_saturation.txt'
+            for sample in config["samples"]
+        ],

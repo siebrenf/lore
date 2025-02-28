@@ -27,3 +27,7 @@ snakemake --snakefile lore/Snakefile --configfile config.yaml --resources mem_mb
   - RE mapping: add a second pass to the alignment stage to specifically map repeat elements. 
   - Optionally merge SMRT cells:
     https://isoseq.how/umi/cli-workflow.html#step-4b---merge-smrt-cells
+  - integrate genomepy to:
+    - get a genome
+    - create the minimap2 index
+    - get an annotation

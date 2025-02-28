@@ -31,7 +31,8 @@ rule pigeon_prepare:
         ref_fasta=config["genome_fasta"],  # rules.genome.output.fasta,
         ref_gtf=config["gene_annotation_gtf"],  # rules.annotation.output.gtf,
     output:
-        txt=expand("{pigeon_dir}/{genome}_prepared.txt", **config),
+        ref_gtf=config["gene_annotation_gtf"].replace(".gtf", ".sorted.gtf"),
+        ref_pgi=config["gene_annotation_gtf"].replace(".gtf", ".sorted.gtf.pgi"),
     log:
         expand("{pigeon_dir}/{genome}_prepare.log", **config),
     threads: 1
@@ -44,8 +45,6 @@ rule pigeon_prepare:
             --log-level TRACE \
             {input.ref_fasta} \
             {input.ref_gtf}  > {log} 2>&1
-            
-        touch {output.txt}
         """
 
 
@@ -59,12 +58,16 @@ rule pigeon_classify:
     input:
         gff=rules.pigeon_sort.output.gff,
         flcn=rules.isoseq_collapse.output.abundance,
-        ref_gtf=config["gene_annotation_gtf"],  # rules.annotation.output.gtf,
-        ref_fasta=config["genome_fasta"],  # rules.genome.output.fasta,
+        ref_gtf=rules.pigeon_prepare.output.ref_gtf,
+        ref_pgi=rules.pigeon_prepare.output.ref_pgi,
+        ref_fasta=config["genome_fasta"],
     output:
-        gff=expand("{pigeon_dir}/{{sample}}.gff", **config),
+        json=expand("{pigeon_dir}/{{sample}}.report.json", **config),
+        summary=expand("{pigeon_dir}/{{sample}}.summary.txt", **config),
+        classification=expand("{pigeon_dir}/{{sample}}_classification.txt", **config),
+        junctions=expand("{pigeon_dir}/{{sample}}_junctions.txt", **config),
     log:
-        expand("{pigeon_dir}/{{sample}}_classify.log", **config),
+        expand("{pigeon_dir}/{{sample}}.log", **config),
     params:
         outdir=config["pigeon_dir"],
         # TODO: find the origins of polyA.txt & TSS.bed
@@ -82,7 +85,7 @@ rule pigeon_classify:
             --out-dir {params.outdir} \
             {params.polya} \
             {params.cage_peak} \
-            --flcn {input.flcn} \
+            --flnc {input.flcn} \
             {input.gff} \
             {input.ref_gtf} \
             {input.ref_fasta} > {log} 2>&1
@@ -97,13 +100,29 @@ rule pigeon_filter:
       - https://isoseq.how/classification/workflow.html#filter-isoforms
     """
     input:
+        classification=rules.pigeon_classify.output.classification,
         gff=rules.pigeon_sort.output.gff,
     output:
-        txt=expand("{pigeon_dir}/{{sample}}.txt", **config),
+        json=expand(
+            "{pigeon_dir}/{{sample}}_classification.filtered.report.json", **config
+        ),
+        summary=expand(
+            "{pigeon_dir}/{{sample}}_classification.filtered.summary.txt", **config
+        ),
+        classification=expand(
+            "{pigeon_dir}/{{sample}}_classification.filtered_lite_classification.txt",
+            **config,
+        ),
+        junctions=expand(
+            "{pigeon_dir}/{{sample}}_classification.filtered_lite_junctions.txt",
+            **config,
+        ),
+        reasons=expand(
+            "{pigeon_dir}/{{sample}}_classification.filtered_lite_reasons.txt",
+            **config,
+        ),
     log:
         expand("{pigeon_dir}/{{sample}}_filter.log", **config),
-    params:
-        outdir=config["pigeon_dir"],
     threads: 1
     resources:
         mem_mb=500,
@@ -113,6 +132,74 @@ rule pigeon_filter:
             --log-file {log} \
             --log-level TRACE \
             --num-threads {threads} \
-            {input.gff} \
-            {output.txt} > {log} 2>&1
+            --isoforms {input.gff} \
+            {input.classification} > {log} 2>&1
+        """
+
+
+rule pigeon_make_seurat:
+    """
+    Generate files for Seurat/Scanpy
+
+    Sources:
+      - https://isoseq.how/classification/workflow.html#report-gene-saturation
+    """
+    input:
+        classification=rules.pigeon_filter.output.classification,
+        fasta=rules.isoseq_groupdedup.output.fasta,
+        group=rules.isoseq_collapse.output.group,
+    output:
+        genes_matrix=expand("{seurat_dir}/{{sample}}/genes_seurat/matrix.mtx", **config),
+        isoforms_matrix=expand(
+            "{seurat_dir}/{{sample}}/isoforms_seurat/matrix.mtx", **config
+        ),
+        info=expand("{seurat_dir}/{{sample}}/{{sample}}.info.csv", **config),
+    log:
+        expand("{seurat_dir}/{{sample}}_make_seurat.log", **config),
+    params:
+        outdir=expand("{seurat_dir}/{{sample}}", **config),
+    threads: 4  # TODO: check
+    resources:
+        mem_mb=2_000,  # TODO: check
+    shell:
+        """
+        pigeon make-seurat \
+            --log-file {log} \
+            --log-level TRACE \
+            --num-threads {threads} \
+            --out-dir {params.outdir} \
+            --dedup {input.fasta} \
+            --group {input.group} \
+            --keep-novel-genes \
+            --out-prefix {wildcards.sample} \
+            {input.classification} > {log} 2>&1
+        """
+
+
+rule pigeon_report:
+    """
+    Gene and isoform- level saturation can be determined by subsampling the 
+    classification output and determining the number of unique 
+    genes / isoforms at each subsample size.
+
+    Sources:
+      - https://isoseq.how/classification/workflow.html#report-gene-saturation
+    """
+    input:
+        classification=rules.pigeon_filter.output.classification,
+    output:
+        report=expand("{pigeon_dir}/{{sample}}_saturation.txt", **config),
+    log:
+        expand("{pigeon_dir}/{{sample}}_report.log", **config),
+    threads: 2  # TODO: check
+    resources:
+        mem_mb=2_000,  # TODO: check
+    shell:
+        """
+        pigeon report \
+            --log-file {log} \
+            --log-level TRACE \
+            --num-threads {threads} \
+            {input.classification} \
+            {output.report} > {log} 2>&1
         """

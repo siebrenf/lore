@@ -19,7 +19,8 @@ for directory in [
     "dedup_dir",  # 2-DeduplicatedReads/
     "isoseq_collapse_dir",
     "pbmm2_dir",
-    "pigeon_dir",
+    "pigeon_dir",  # 3-CollapsedTranscripts/
+    "seurat_dir",  # 4-SeuratMatrix/
 ]:
     if config.get(directory) is None:
         suffix = directory.rsplit("_", 1)[0]
