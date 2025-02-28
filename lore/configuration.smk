@@ -17,6 +17,9 @@ for directory in [
     "isoseq_refine_dir",
     "isoseq_correct_dir",
     "dedup_dir",  # 2-DeduplicatedReads/
+    "isoseq_collapse_dir",
+    "pbmm2_dir",
+    "pigeon_dir",
 ]:
     if config.get(directory) is None:
         suffix = directory.rsplit("_", 1)[0]
@@ -26,6 +29,9 @@ for k, v in config.items():
     if isinstance(k, str) and k.endswith("_dir"):
         if not os.path.exists(v):
             os.makedirs(v)
+
+# reference genome
+config["genome"] = os.path.basename(config["genome_fasta"].rsplit(".fa", 1)[0])
 
 # print config
 logger.info("===================LORE Config===================")

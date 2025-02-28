@@ -19,6 +19,10 @@ design:
   #  Docs: https://isoseq.how/umi/umi-barcode-design.html
   16B-10U-13X-T
 
+genome_fasta:
+  /home/siebrenf/.local/share/genomes/hg38/hg38.fa
+gene_annotation_gtf:
+  /home/siebrenf/.local/share/genomes/hg38/hg38.annotation.gtf
 ccs_dir:
   tests/ccs
 samples:

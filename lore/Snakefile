@@ -1,12 +1,15 @@
 from snakemake.io import expand
 
+
 include: "configuration.smk"
 include: "download.smk"
 include: "0_skera.smk"
 include: "1_lima.smk"
 include: "2_isoseq.smk"
+include: "3_pbmm2.smk"
+include: "4_pigeon.smk"
 
 
 rule all:
     input:
-        [f'{config["dedup_dir"]}/{sample}.bam' for sample in config["samples"]]
+        [f'{config["pigeon_dir"]}/{sample}.gff' for sample in config["samples"]],

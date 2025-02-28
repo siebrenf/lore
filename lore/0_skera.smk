@@ -14,8 +14,16 @@ rule skera:
         adapters=rules.adapters.output.fasta,
     output:
         bam=expand("{sreads_dir}/{{sample}}.bam", **config),
-        # pbi=expand("{sreads_dir}/{{sample}}.bam.pbi",**config),
-    log: expand("{sreads_dir}/{{sample}}.log", **config),
+        # unrequested files:
+        pbi=expand("{sreads_dir}/{{sample}}.bam.pbi", **config),
+        lig=expand("{sreads_dir}/{{sample}}.ligations.csv", **config),
+        bamnp=expand("{sreads_dir}/{{sample}}.non_passing.bam", **config),
+        pbinp=expand("{sreads_dir}/{{sample}}.non_passing.bam.pbi", **config),
+        rl=expand("{sreads_dir}/{{sample}}.read_lengths.csv", **config),
+        csv=expand("{sreads_dir}/{{sample}}.summary.csv", **config),
+        json=expand("{sreads_dir}/{{sample}}.summary.json", **config),
+    log:
+        expand("{sreads_dir}/{{sample}}.log", **config),
     threads: 24  # TODO: check
     resources:
         mem_mb=7_000,  # TODO: check
@@ -27,5 +35,5 @@ rule skera:
             --log-level TRACE \
             {input.bam} \
             {input.adapters} \
-            {output.bam}
+            {output.bam} > {log} 2>&1
         """

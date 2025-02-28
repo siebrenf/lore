@@ -13,8 +13,10 @@ rule isoseq_tag:
         bam=rules.lima.output.bam,
     output:
         bam=expand("{isoseq_tag_dir}/{{sample}}.bam", **config),
-        xml=expand("{isoseq_tag_dir}/{{sample}}.transcriptset.xml",**config),
-    log: expand("{isoseq_tag_dir}/{{sample}}.log", **config),
+        # unrequested files:
+        pbi=expand("{isoseq_tag_dir}/{{sample}}.bam.pbi", **config),
+    log:
+        expand("{isoseq_tag_dir}/{{sample}}.log", **config),
     params:
         design=config["design"],  # Barcoding design. Specifies which bases to use as cell/molecular barcodes
     threads: 8  # TODO: check
@@ -24,10 +26,11 @@ rule isoseq_tag:
         """
         isoseq tag \
             --log-file {log} \
+            --log-level TRACE \
             --num-threads {threads} \
             --design {params.design} \
             {input.bam} \
-            {output.bam}
+            {output.bam} > {log} 2>&1
         """
 
 
@@ -45,11 +48,18 @@ rule isoseq_refine:
     """
     input:
         bam=rules.isoseq_tag.output.bam,
-        adapters=rules.adapters.output.fasta,
+        primers=rules.primers.output.fasta,
     output:
         bam=expand("{isoseq_refine_dir}/{{sample}}.bam", **config),
-        xml=expand("{isoseq_refine_dir}/{{sample}}.transcriptset.xml",**config),
-    log: expand("{isoseq_refine_dir}/{{sample}}.log", **config),
+        # unrequested files:
+        pbi=expand("{isoseq_refine_dir}/{{sample}}.bam.pbi", **config),
+        xml=expand("{isoseq_refine_dir}/{{sample}}.consensusreadset.xml", **config),
+        json=expand(
+            "{isoseq_refine_dir}/{{sample}}.filter_summary.report.json", **config
+        ),
+        csv=expand("{isoseq_refine_dir}/{{sample}}.report.csv", **config),
+    log:
+        expand("{isoseq_refine_dir}/{{sample}}.log", **config),
     threads: 8  # TODO: check
     resources:
         mem_mb=7_000,  # TODO: check
@@ -58,10 +68,11 @@ rule isoseq_refine:
         isoseq refine \
             --require-polya \
             --log-file {log} \
+            --log-level TRACE \
             --num-threads {threads} \
             {input.bam} \
-            {input.adapters} \
-            {output.bam}
+            {input.primers} \
+            {output.bam} > {log} 2>&1
         """
 
 
@@ -83,8 +94,12 @@ rule isoseq_correct:
         barcodes=rules.barcodes.output.txt,
     output:
         bam=expand("{isoseq_correct_dir}/{{sample}}.bam", **config),
+        # unrequested files:
         pbi=expand("{isoseq_correct_dir}/{{sample}}.bam.pbi", **config),
-    log: expand("{isoseq_correct_dir}/{{sample}}.log", **config),
+        json=expand("{isoseq_correct_dir}/{{sample}}.report.json", **config),
+        pbi2=expand("{isoseq_correct_dir}/{{sample}}_intermediate.bam.pbi", **config),
+    log:
+        expand("{isoseq_correct_dir}/{{sample}}.log", **config),
     threads: 8  # TODO: check
     resources:
         mem_mb=7_000,  # TODO: check
@@ -92,10 +107,11 @@ rule isoseq_correct:
         """
         isoseq correct \
             --log-file {log} \
+            --log-level TRACE \
             --num-threads {threads} \
             --barcodes {input.barcodes} \
             {input.bam} \
-            {output.bam}
+            {output.bam} > {log} 2>&1
         """
 
 
@@ -112,8 +128,11 @@ rule isoseq_groupdedup:
         bam=rules.isoseq_correct.output.bam,
     output:
         bam=expand("{dedup_dir}/{{sample}}.bam", **config),
+        # unrequested files:
         pbi=expand("{dedup_dir}/{{sample}}.bam.pbi", **config),
-    log: expand("{dedup_dir}/{{sample}}.log", **config),
+        fasta=expand("{dedup_dir}/{{sample}}.fasta", **config),
+    log:
+        expand("{dedup_dir}/{{sample}}.log", **config),
     threads: 8  # TODO: check
     resources:
         mem_mb=7_000,  # TODO: check
@@ -121,7 +140,36 @@ rule isoseq_groupdedup:
         """
         isoseq groupdedup \
             --log-file {log} \
+            --log-level TRACE \
             --num-threads {threads} \
             {input.bam} \
-            {output.bam}
+            {output.bam} > {log} 2>&1
+        """
+
+
+rule isoseq_collapse:
+    """
+    Collapse redundant transcripts into unique isoforms based on exonic structures
+
+    Sources:
+      - https://isoseq.how/classification/workflow.html#collapse-into-unique-isoforms
+    """
+    input:
+        bam=expand("{pbmm2_dir}/{{sample}}.bam", **config),  # bam=rules.pbmm2_align.output.bam,
+    output:
+        gff=expand("{isoseq_collapse_dir}/{{sample}}.unsorted.gff", **config),
+        abundance=expand("{isoseq_collapse_dir}/{{sample}}.abundance.txt", **config),
+    log:
+        expand("{isoseq_collapse_dir}/{{sample}}_collapse.log", **config),
+    threads: 8  # TODO: check
+    resources:
+        mem_mb=7_000,  # TODO: check
+    shell:
+        """
+        isoseq collapse \
+            --log-file {log} \
+            --log-level TRACE \
+            --num-threads {threads} \
+            {input.bam} \
+            {output.gff} > {log} 2>&1
         """

@@ -9,7 +9,8 @@ rule rule_name:
         key=rules.other_rule_name.output.key,
     output:
         key=expand("{config_key}/{{wildcard}}.bam", **config),
-    log: ""
+    log:
+        "",
     params:
         flags="-a",
     threads: 1
