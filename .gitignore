@@ -1,0 +1,8 @@
+.idea/
+*.snakemake/
+
+*log.txt
+*.log
+results/
+
+sread/

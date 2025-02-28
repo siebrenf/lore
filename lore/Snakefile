@@ -1,0 +1,26 @@
+from snakemake.io import expand
+
+include: "configuration.smk"
+include: "blue/lima.smk"
+
+
+# rule rule_name:
+#     """
+#     docstring
+#     """
+#     input: ""
+#     output: "test.txt"
+#     log: ""
+#     params: flags=""
+#     threads: 1
+#     resources:
+#         mem_mb=40_000,# 30-50 GB
+#     shell:
+#         """
+#         touch {output}
+#         """
+
+
+rule all:
+    input:
+        expand("{lima_dir}/{samples}.fl.bam", **config)  # TODO: update
