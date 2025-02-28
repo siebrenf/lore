@@ -1,0 +1,25 @@
+adapters:
+  # Sequencing adapters.
+  #   Docs: https://skera.how/adapters
+  https://downloads.pacbcloud.com/public/dataset/Kinnex-single-cell-RNA/REF-MAS_adapters/MAS-Seq_Adapter_v1/mas16_primers.fasta
+
+primers:
+  # Sequencing primers.
+  #  Docs: https://isoseq.how/umi/cli-workflow.html#step-2---primer-removal
+  https://downloads.pacbcloud.com/public/dataset/Kinnex-single-cell-RNA/REF-10x_primers/10x_5kit_primers.fasta
+
+barcodes:
+  # Cell/molecular barcodes.
+  #  Docs: https://isoseq.how/umi/cli-workflow.html#step-5---cell-barcode-correction-and-real-cell-identification
+  https://downloads.pacbcloud.com/public/dataset/Kinnex-single-cell-RNA/REF-10x_barcodes/3M-5pgex-jan-2023.REVCOMP.txt.gz
+
+design:
+  # Barcoding design.
+  #  Specifies which bases to use as cell/molecular barcodes.
+  #  Docs: https://isoseq.how/umi/umi-barcode-design.html
+  16B-10U-13X-T
+
+ccs_dir:
+  tests/ccs
+samples:
+  - test_sample

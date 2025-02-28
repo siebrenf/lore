@@ -1,0 +1,31 @@
+from snakemake.io import expand
+
+
+rule skera:
+    """
+    Process HiFi reads to produce S-reads that represent the original cDNA molecules. 
+    
+    Sources: 
+      - https://skera.how
+      - https://downloads.pacbcloud.com/public/dataset/Kinnex-single-cell-RNA/
+    """
+    input:
+        bam=expand("{ccs_dir}/{{sample}}.bam", **config),
+        adapters=rules.adapters.output.fasta,
+    output:
+        bam=expand("{sreads_dir}/{{sample}}.bam", **config),
+        # pbi=expand("{sreads_dir}/{{sample}}.bam.pbi",**config),
+    log: expand("{sreads_dir}/{{sample}}.log", **config),
+    threads: 24  # TODO: check
+    resources:
+        mem_mb=7_000,  # TODO: check
+    shell:
+        """
+        skera split \
+            --num-threads {threads} \
+            --log-file {log} \
+            --log-level TRACE \
+            {input.bam} \
+            {input.adapters} \
+            {output.bam}
+        """

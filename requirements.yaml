@@ -1,4 +1,4 @@
-name: pblrp
+name: lore
 channels:
   - conda-forge
   - bioconda
