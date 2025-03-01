@@ -23,6 +23,8 @@ rule lima:
         summary=expand("{lima_dir}/{{sample}}.lima.summary", **config),
     log:
         expand("{lima_dir}/{{sample}}.log", **config),
+    benchmark:
+        expand("{benchmark_dir}/lima_{{sample}}.txt", **config)[0]
     params:
         dir=config["lima_dir"],
     threads: 8

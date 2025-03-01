@@ -17,6 +17,8 @@ rule isoseq_tag:
         pbi=expand("{isoseq_tag_dir}/{{sample}}.bam.pbi", **config),
     log:
         expand("{isoseq_tag_dir}/{{sample}}.log", **config),
+    benchmark:
+        expand("{benchmark_dir}/isoseq_tag_{{sample}}.txt", **config)[0]
     params:
         design=config["design"],  # Barcoding design. Specifies which bases to use as cell/molecular barcodes
     threads: 8  # TODO: check
@@ -60,6 +62,8 @@ rule isoseq_refine:
         csv=expand("{isoseq_refine_dir}/{{sample}}.report.csv", **config),
     log:
         expand("{isoseq_refine_dir}/{{sample}}.log", **config),
+    benchmark:
+        expand("{benchmark_dir}/isoseq_ref_{{sample}}.txt", **config)[0]
     threads: 8  # TODO: check
     resources:
         mem_mb=7_000,  # TODO: check
@@ -100,6 +104,8 @@ rule isoseq_correct:
         pbi2=expand("{isoseq_correct_dir}/{{sample}}_intermediate.bam.pbi", **config),
     log:
         expand("{isoseq_correct_dir}/{{sample}}.log", **config),
+    benchmark:
+        expand("{benchmark_dir}/isoseq_cor_{{sample}}.txt", **config)[0]
     threads: 8  # TODO: check
     resources:
         mem_mb=7_000,  # TODO: check
@@ -133,6 +139,8 @@ rule isoseq_groupdedup:
         fasta=expand("{dedup_dir}/{{sample}}.fasta", **config),
     log:
         expand("{dedup_dir}/{{sample}}.log", **config),
+    benchmark:
+        expand("{benchmark_dir}/isoseq_gdd_{{sample}}.txt", **config)[0]
     threads: 8  # TODO: check
     resources:
         mem_mb=7_000,  # TODO: check
@@ -174,6 +182,8 @@ rule isoseq_collapse:
         json=expand("{isoseq_collapse_dir}/{{sample}}.unsorted.report.json", **config),
     log:
         expand("{isoseq_collapse_dir}/{{sample}}_collapse.log", **config),
+    benchmark:
+        expand("{benchmark_dir}/isoseq_col_{{sample}}.txt", **config)[0]
     threads: 8  # TODO: check
     resources:
         mem_mb=7_000,  # TODO: check

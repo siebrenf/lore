@@ -24,6 +24,8 @@ rule skera:
         json=expand("{sreads_dir}/{{sample}}.summary.json", **config),
     log:
         expand("{sreads_dir}/{{sample}}.log", **config),
+    benchmark:
+        expand("{benchmark_dir}/skera_{{sample}}.txt", **config)[0]
     threads: 24  # TODO: check
     resources:
         mem_mb=7_000,  # TODO: check

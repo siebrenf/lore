@@ -11,6 +11,8 @@ rule pbmm2_index:
         mmi=expand("{pbmm2_dir}/{genome}.mmi", **config),
     log:
         expand("{pbmm2_dir}/{genome}.log", **config),
+    benchmark:
+        expand("{benchmark_dir}/isoseq_mmi_{genome}.txt", **config)[0]
     threads: 3
     resources:
         mem_mb=12_000,
@@ -40,6 +42,8 @@ rule pbmm2_align:
         bam=expand("{pbmm2_dir}/{{sample}}.bam", **config),
     log:
         expand("{pbmm2_dir}/{{sample}}.log", **config),
+    benchmark:
+        expand("{benchmark_dir}/isoseq_mma_{{sample}}.txt", **config)[0]
     threads: 12
     resources:
         mem_mb=20_000,

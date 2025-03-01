@@ -5,6 +5,8 @@ rule pigeon_sort:
         gff=expand("{isoseq_collapse_dir}/{{sample}}.gff", **config),
     log:
         expand("{isoseq_collapse_dir}/{{sample}}_sort.log", **config),
+    benchmark:
+        expand("{benchmark_dir}/pigeon_srt_{{sample}}.txt", **config)[0]
     threads: 1
     resources:
         mem_mb=500,
@@ -35,6 +37,8 @@ rule pigeon_prepare:
         ref_pgi=config["gene_annotation_gtf"].replace(".gtf", ".sorted.gtf.pgi"),
     log:
         expand("{pigeon_dir}/{genome}_prepare.log", **config),
+    benchmark:
+        expand("{benchmark_dir}/pigeon_pre_{genome}.txt", **config)[0]
     threads: 1
     resources:
         mem_mb=500,
@@ -68,6 +72,8 @@ rule pigeon_classify:
         junctions=expand("{pigeon_dir}/{{sample}}_junctions.txt", **config),
     log:
         expand("{pigeon_dir}/{{sample}}.log", **config),
+    benchmark:
+        expand("{benchmark_dir}/pigeon_cls_{{sample}}.txt", **config)[0]
     params:
         outdir=config["pigeon_dir"],
         # TODO: find the origins of polyA.txt & TSS.bed
@@ -123,6 +129,8 @@ rule pigeon_filter:
         ),
     log:
         expand("{pigeon_dir}/{{sample}}_filter.log", **config),
+    benchmark:
+        expand("{benchmark_dir}/pigeon_flt_{{sample}}.txt", **config)[0]
     threads: 1
     resources:
         mem_mb=500,
@@ -156,6 +164,8 @@ rule pigeon_make_seurat:
         info=expand("{seurat_dir}/{{sample}}/{{sample}}.info.csv", **config),
     log:
         expand("{seurat_dir}/{{sample}}_make_seurat.log", **config),
+    benchmark:
+        expand("{benchmark_dir}/pigeon_mks_{{sample}}.txt", **config)[0]
     params:
         outdir=expand("{seurat_dir}/{{sample}}", **config),
     threads: 4  # TODO: check
@@ -191,6 +201,8 @@ rule pigeon_report:
         report=expand("{pigeon_dir}/{{sample}}_saturation.txt", **config),
     log:
         expand("{pigeon_dir}/{{sample}}_report.log", **config),
+    benchmark:
+        expand("{benchmark_dir}/pigeon_rep_{{sample}}.txt", **config)[0]
     threads: 2  # TODO: check
     resources:
         mem_mb=2_000,  # TODO: check

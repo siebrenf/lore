@@ -10,6 +10,7 @@ if not os.path.exists(config["results_dir"]):
     os.makedirs(config["results_dir"])
 
 for directory in [
+    "benchmark_dir",
     "ccs_dir",  # 0-CCS/
     "sreads_dir",  # 1-Sreads/
     "lima_dir",
