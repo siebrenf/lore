@@ -31,3 +31,4 @@ snakemake --snakefile lore/Snakefile --configfile config.yaml --resources mem_mb
     - get a genome
     - create the minimap2 index
     - get an annotation
+  - check: https://lima.how/faq/qc.html

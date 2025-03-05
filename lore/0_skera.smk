@@ -3,7 +3,7 @@ from snakemake.io import expand
 
 rule skera:
     """
-    Process HiFi reads to produce S-reads that represent the original cDNA molecules. 
+    Deconcatenate HiFi reads to produce S-reads that represent the original cDNA molecules. 
     
     Sources: 
       - https://skera.how

@@ -1,6 +1,6 @@
 .idea/
 *.snakemake/
 
-*log.txt
+*log*.txt
 *.log
 results/
