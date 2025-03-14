@@ -13,22 +13,22 @@ rule skera:
         bam=expand("{ccs_dir}/{{sample}}.bam", **config),
         adapters=rules.adapters.output.fasta,
     output:
-        bam=expand("{sreads_dir}/{{sample}}.bam", **config),
+        bam=expand("{skera_dir}/{{sample}}.bam", **config),
         # unrequested files:
-        pbi=expand("{sreads_dir}/{{sample}}.bam.pbi", **config),
-        lig=expand("{sreads_dir}/{{sample}}.ligations.csv", **config),
-        bamnp=expand("{sreads_dir}/{{sample}}.non_passing.bam", **config),
-        pbinp=expand("{sreads_dir}/{{sample}}.non_passing.bam.pbi", **config),
-        rl=expand("{sreads_dir}/{{sample}}.read_lengths.csv", **config),
-        csv=expand("{sreads_dir}/{{sample}}.summary.csv", **config),
-        json=expand("{sreads_dir}/{{sample}}.summary.json", **config),
+        pbi=expand("{skera_dir}/{{sample}}.bam.pbi", **config),
+        lig=expand("{skera_dir}/{{sample}}.ligations.csv", **config),
+        bamnp=expand("{skera_dir}/{{sample}}.non_passing.bam", **config),
+        pbinp=expand("{skera_dir}/{{sample}}.non_passing.bam.pbi", **config),
+        rl=expand("{skera_dir}/{{sample}}.read_lengths.csv", **config),
+        csv=expand("{skera_dir}/{{sample}}.summary.csv", **config),
+        json=expand("{skera_dir}/{{sample}}.summary.json", **config),
     log:
-        expand("{sreads_dir}/{{sample}}.log", **config),
+        expand("{skera_dir}/{{sample}}.log", **config),
     benchmark:
         expand("{benchmark_dir}/skera_{{sample}}.txt", **config)[0]
-    threads: 24  # TODO: check
+    threads: 48
     resources:
-        mem_mb=7_000,  # TODO: check
+        mem_mb=2_000,
     shell:
         """
         skera split \

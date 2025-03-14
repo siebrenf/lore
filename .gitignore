@@ -1,6 +1,8 @@
 .idea/
+*__pycache__/
 *.snakemake/
 
+*.nfs*
 *log*.txt
 *.log
 results/

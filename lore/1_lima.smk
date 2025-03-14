@@ -31,7 +31,7 @@ rule lima:
         dir=config["lima_dir"],
     threads: 128
     resources:
-        mem_mb=7_000,
+        mem_mb=3_500,
     shell:
         """
         lima \
@@ -43,7 +43,13 @@ rule lima:
             {input.bam} \
             {input.primers} \
             {output.bam} > {log} 2>&1
-            
+        
+        # log output file names before making any changes
+        echo "" >> {log}
+        echo "Output files of running lima with '{wildcards.sample}':" >> {log}
+        ls -1a {params.dir}/{wildcards.sample}* >> {log}
+        echo "" >> {log}
+        
         # remove the adapter direction from the file names
         for f1 in {params.dir}/{wildcards.sample}*; do
             f2="$(echo "$f1" | sed 's/5p--3p.//g; s/3p--5p.//g')"

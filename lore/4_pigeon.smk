@@ -1,10 +1,14 @@
+from os.path import dirname
+from snakemake.io import expand
+
+
 rule pigeon_sort:
     input:
         gff=rules.isoseq_collapse.output.gff,
     output:
-        gff=expand("{isoseq_collapse_dir}/{{sample}}.gff", **config),
+        gff=expand("{pigeon_sort_dir}/{{sample}}.gff", **config),
     log:
-        expand("{isoseq_collapse_dir}/{{sample}}_sort.log", **config),
+        expand("{pigeon_sort_dir}/{{sample}}.log", **config),
     benchmark:
         expand("{benchmark_dir}/pigeon_srt_{{sample}}.txt", **config)[0]
     threads: 1
@@ -36,9 +40,9 @@ rule pigeon_prepare:
         ref_gtf=config["gene_annotation_gtf"].replace(".gtf", ".sorted.gtf"),
         ref_pgi=config["gene_annotation_gtf"].replace(".gtf", ".sorted.gtf.pgi"),
     log:
-        expand("{pigeon_dir}/{genome}_prepare.log", **config),
+        expand("{genome_dir}/pigeon_prepare_{genome}.log", **config),
     benchmark:
-        expand("{benchmark_dir}/pigeon_pre_{genome}.txt", **config)[0]
+        expand("{benchmark_dir}/pigeon_prepare_{genome}.txt", **config)[0]
     threads: 1
     resources:
         mem_mb=500,
@@ -66,22 +70,22 @@ rule pigeon_classify:
         ref_pgi=rules.pigeon_prepare.output.ref_pgi,
         ref_fasta=config["genome_fasta"],
     output:
-        json=expand("{pigeon_dir}/{{sample}}.report.json", **config),
-        summary=expand("{pigeon_dir}/{{sample}}.summary.txt", **config),
-        classification=expand("{pigeon_dir}/{{sample}}_classification.txt", **config),
-        junctions=expand("{pigeon_dir}/{{sample}}_junctions.txt", **config),
+        json=expand("{pigeon_classify_dir}/{{sample}}.report.json", **config),
+        summary=expand("{pigeon_classify_dir}/{{sample}}.summary.txt", **config),
+        classification=expand("{pigeon_classify_dir}/{{sample}}_classification.txt", **config),
+        junctions=expand("{pigeon_classify_dir}/{{sample}}_junctions.txt", **config),
     log:
-        expand("{pigeon_dir}/{{sample}}.log", **config),
+        expand("{pigeon_classify_dir}/{{sample}}.log", **config),
     benchmark:
-        expand("{benchmark_dir}/pigeon_cls_{{sample}}.txt", **config)[0]
+        expand("{benchmark_dir}/pigeon_classify_{{sample}}.txt", **config)[0]
     params:
-        outdir=config["pigeon_dir"],
+        outdir=config["pigeon_classify_dir"],
         # TODO: find the origins of polyA.txt & TSS.bed
         polya=f"--poly-a {config["poly-a"]}" if "poly-a" in config else "",
         cage_peak=f"--cage-peak {config["tss_bed"]}" if "tss_bed" in config else "",
-    threads: 1
+    threads: 2
     resources:
-        mem_mb=500,
+        mem_mb=8_000,
     shell:
         """
         pigeon classify \
@@ -110,27 +114,27 @@ rule pigeon_filter:
         gff=rules.pigeon_sort.output.gff,
     output:
         json=expand(
-            "{pigeon_dir}/{{sample}}_classification.filtered.report.json", **config
+            "{pigeon_filter_dir}/{{sample}}_classification.filtered.report.json", **config
         ),
         summary=expand(
-            "{pigeon_dir}/{{sample}}_classification.filtered.summary.txt", **config
+            "{pigeon_filter_dir}/{{sample}}_classification.filtered.summary.txt", **config
         ),
         classification=expand(
-            "{pigeon_dir}/{{sample}}_classification.filtered_lite_classification.txt",
+            "{pigeon_filter_dir}/{{sample}}_classification.filtered_lite_classification.txt",
             **config,
         ),
         junctions=expand(
-            "{pigeon_dir}/{{sample}}_classification.filtered_lite_junctions.txt",
+            "{pigeon_filter_dir}/{{sample}}_classification.filtered_lite_junctions.txt",
             **config,
         ),
         reasons=expand(
-            "{pigeon_dir}/{{sample}}_classification.filtered_lite_reasons.txt",
+            "{pigeon_filter_dir}/{{sample}}_classification.filtered_lite_reasons.txt",
             **config,
         ),
     log:
-        expand("{pigeon_dir}/{{sample}}_filter.log", **config),
+        expand("{pigeon_filter_dir}/{{sample}}_filter.log", **config),
     benchmark:
-        expand("{benchmark_dir}/pigeon_flt_{{sample}}.txt", **config)[0]
+        expand("{benchmark_dir}/pigeon_filter_{{sample}}.txt", **config)[0]
     threads: 1
     resources:
         mem_mb=500,
@@ -168,9 +172,9 @@ rule pigeon_make_seurat:
         expand("{benchmark_dir}/pigeon_mks_{{sample}}.txt", **config)[0]
     params:
         outdir=expand("{seurat_dir}/{{sample}}", **config),
-    threads: 4  # TODO: check
+    threads: 4
     resources:
-        mem_mb=2_000,  # TODO: check
+        mem_mb=12_000,
     shell:
         """
         pigeon make-seurat \
@@ -198,14 +202,14 @@ rule pigeon_report:
     input:
         classification=rules.pigeon_filter.output.classification,
     output:
-        report=expand("{pigeon_dir}/{{sample}}_saturation.txt", **config),
+        report=expand("{pigeon_report_dir}/{{sample}}_saturation.txt", **config),
     log:
-        expand("{pigeon_dir}/{{sample}}_report.log", **config),
+        expand("{pigeon_report_dir}/{{sample}}_report.log", **config),
     benchmark:
-        expand("{benchmark_dir}/pigeon_rep_{{sample}}.txt", **config)[0]
-    threads: 2  # TODO: check
+        expand("{benchmark_dir}/pigeon_report_{{sample}}.txt", **config)[0]
+    threads: 1
     resources:
-        mem_mb=2_000,  # TODO: check
+        mem_mb=1_000,
     shell:
         """
         pigeon report \

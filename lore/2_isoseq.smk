@@ -21,9 +21,9 @@ rule isoseq_tag:
         expand("{benchmark_dir}/isoseq_tag_{{sample}}.txt", **config)[0]
     params:
         design=config["design"],  # Barcoding design. Specifies which bases to use as cell/molecular barcodes
-    threads: 8  # TODO: check
+    threads: 16
     resources:
-        mem_mb=7_000,  # TODO: check
+        mem_mb=500,
     shell:
         """
         isoseq tag \
@@ -64,9 +64,9 @@ rule isoseq_refine:
         expand("{isoseq_refine_dir}/{{sample}}.log", **config),
     benchmark:
         expand("{benchmark_dir}/isoseq_ref_{{sample}}.txt", **config)[0]
-    threads: 8  # TODO: check
+    threads: 16
     resources:
-        mem_mb=7_000,  # TODO: check
+        mem_mb=500,
     shell:
         """
         isoseq refine \
@@ -106,9 +106,9 @@ rule isoseq_correct:
         expand("{isoseq_correct_dir}/{{sample}}.log", **config),
     benchmark:
         expand("{benchmark_dir}/isoseq_cor_{{sample}}.txt", **config)[0]
-    threads: 8  # TODO: check
+    threads: 16  # TODO: check
     resources:
-        mem_mb=7_000,  # TODO: check
+        mem_mb=40_000,  # TODO: check
     shell:
         """
         isoseq correct \
@@ -133,17 +133,17 @@ rule isoseq_groupdedup:
     input:
         bam=rules.isoseq_correct.output.bam,
     output:
-        bam=expand("{dedup_dir}/{{sample}}.bam", **config),
+        bam=expand("{isoseq_dedup_dir}/{{sample}}.bam", **config),
         # unrequested files:
-        pbi=expand("{dedup_dir}/{{sample}}.bam.pbi", **config),
-        fasta=expand("{dedup_dir}/{{sample}}.fasta", **config),
+        pbi=expand("{isoseq_dedup_dir}/{{sample}}.bam.pbi", **config),
+        fasta=expand("{isoseq_dedup_dir}/{{sample}}.fasta", **config),
     log:
-        expand("{dedup_dir}/{{sample}}.log", **config),
+        expand("{isoseq_dedup_dir}/{{sample}}.log", **config),
     benchmark:
         expand("{benchmark_dir}/isoseq_gdd_{{sample}}.txt", **config)[0]
-    threads: 8  # TODO: check
+    threads: 8
     resources:
-        mem_mb=7_000,  # TODO: check
+        mem_mb=8_000,
     shell:
         """
         isoseq groupdedup \
@@ -181,12 +181,12 @@ rule isoseq_collapse:
         ),
         json=expand("{isoseq_collapse_dir}/{{sample}}.unsorted.report.json", **config),
     log:
-        expand("{isoseq_collapse_dir}/{{sample}}_collapse.log", **config),
+        expand("{isoseq_collapse_dir}/{{sample}}.log", **config),
     benchmark:
         expand("{benchmark_dir}/isoseq_col_{{sample}}.txt", **config)[0]
-    threads: 8  # TODO: check
+    threads: 8
     resources:
-        mem_mb=7_000,  # TODO: check
+        mem_mb=14_000,
     shell:
         """
         isoseq collapse \

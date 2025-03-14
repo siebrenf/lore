@@ -8,6 +8,7 @@ include: "1_lima.smk"
 include: "2_isoseq.smk"
 include: "3_pbmm2.smk"
 include: "4_pigeon.smk"
+include: "5_qc.smk"
 
 
 rule all:
@@ -17,6 +18,13 @@ rule all:
             for sample in config["samples"]
         ],
         [
-            f'{config["pigeon_dir"]}/{sample}_saturation.txt'
+            f'{config["pigeon_report_dir"]}/{sample}_saturation.txt'
+            for sample in config["samples"]
+        ],
+        [
+            f'{config["qc_dir"]}/lima_qc_detail_{sample}.txt'
+            for sample in config["samples"]
+        ],        [
+            f'{config["qc_dir"]}/{sample}_summary_yield_zmw.png'
             for sample in config["samples"]
         ],

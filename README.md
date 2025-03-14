@@ -15,7 +15,7 @@ snakemake --snakefile lore/Snakefile --configfile config.yaml --dry-run
 
 Run your config
 ```[bash]
-snakemake --snakefile lore/Snakefile --configfile config.yaml --resources mem_mb=12_000 -j 14 > log.txt 2>&1
+nice snakemake --use-conda --snakefile lore/Snakefile --configfile config.yaml --resources parallel_downloads=1,mem_mb=12_000 -j 14 > log.txt 2>&1
 ```
 
 ## Further reading:
@@ -31,4 +31,3 @@ snakemake --snakefile lore/Snakefile --configfile config.yaml --resources mem_mb
     - get a genome
     - create the minimap2 index
     - get an annotation
-  - check: https://lima.how/faq/qc.html

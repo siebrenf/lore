@@ -20,10 +20,12 @@ design:
   16B-10U-13X-T
 
 genome_fasta:
-  /home/siebrenf/.local/share/genomes/hg38/hg38.fa
+  /scratch/siebrenf/lore/GRCh38/GRCh38.fa
 gene_annotation_gtf:
-  /home/siebrenf/.local/share/genomes/hg38/hg38.annotation.gtf
+  /scratch/siebrenf/lore/GRCh38/GRCh38.annotation.gtf
+results_dir:
+  /scratch/siebrenf/lore2
 ccs_dir:
-  tests/ccs
+  /scratch/siebrenf/lore/ccs
 samples:
-  - test_sample
+  - segmented

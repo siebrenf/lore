@@ -1,0 +1,13 @@
+name: lima_qc
+channels:
+  - conda-forge
+dependencies:
+  - conda-forge::r-base
+  - conda-forge::r-ggplot2 <3.4.0
+  - conda-forge::r-dplyr
+  - conda-forge::r-tidyr
+  - conda-forge::r-viridis
+  - conda-forge::r-hexbin
+  - conda-forge::r-scales
+  - conda-forge::r-data.table
+  - conda-forge::conda-ecosystem-user-package-isolation=1.0
