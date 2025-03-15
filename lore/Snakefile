@@ -22,9 +22,9 @@ rule all:
             for sample in config["samples"]
         ],
         [
-            f'{config["qc_dir"]}/lima_qc_detail_{sample}.txt'
+            f'{config["qc_dir"]}/{sample}/detail_yield_zmw.png'
             for sample in config["samples"]
         ],        [
-            f'{config["qc_dir"]}/{sample}_summary_yield_zmw.png'
+            f'{config["qc_dir"]}/{sample}/summary_yield_zmw.png'
             for sample in config["samples"]
         ],

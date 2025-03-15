@@ -75,7 +75,7 @@ rule pigeon_classify:
         classification=expand("{pigeon_classify_dir}/{{sample}}_classification.txt", **config),
         junctions=expand("{pigeon_classify_dir}/{{sample}}_junctions.txt", **config),
     log:
-        expand("{pigeon_classify_dir}/{{sample}}.log", **config),
+        expand("{pigeon_classify_dir}/{{sample}}_classify.log", **config),
     benchmark:
         expand("{benchmark_dir}/pigeon_classify_{{sample}}.txt", **config)[0]
     params:
@@ -114,25 +114,25 @@ rule pigeon_filter:
         gff=rules.pigeon_sort.output.gff,
     output:
         json=expand(
-            "{pigeon_filter_dir}/{{sample}}_classification.filtered.report.json", **config
+            "{pigeon_classify_dir}/{{sample}}_classification.filtered.report.json", **config
         ),
         summary=expand(
-            "{pigeon_filter_dir}/{{sample}}_classification.filtered.summary.txt", **config
+            "{pigeon_classify_dir}/{{sample}}_classification.filtered.summary.txt", **config
         ),
         classification=expand(
-            "{pigeon_filter_dir}/{{sample}}_classification.filtered_lite_classification.txt",
+            "{pigeon_classify_dir}/{{sample}}_classification.filtered_lite_classification.txt",
             **config,
         ),
         junctions=expand(
-            "{pigeon_filter_dir}/{{sample}}_classification.filtered_lite_junctions.txt",
+            "{pigeon_classify_dir}/{{sample}}_classification.filtered_lite_junctions.txt",
             **config,
         ),
         reasons=expand(
-            "{pigeon_filter_dir}/{{sample}}_classification.filtered_lite_reasons.txt",
+            "{pigeon_classify_dir}/{{sample}}_classification.filtered_lite_reasons.txt",
             **config,
         ),
     log:
-        expand("{pigeon_filter_dir}/{{sample}}_filter.log", **config),
+        expand("{pigeon_classify_dir}/{{sample}}_filter.log", **config),
     benchmark:
         expand("{benchmark_dir}/pigeon_filter_{{sample}}.txt", **config)[0]
     threads: 1
@@ -167,9 +167,9 @@ rule pigeon_make_seurat:
         ),
         info=expand("{seurat_dir}/{{sample}}/{{sample}}.info.csv", **config),
     log:
-        expand("{seurat_dir}/{{sample}}_make_seurat.log", **config),
+        expand("{seurat_dir}/{{sample}}.log", **config),
     benchmark:
-        expand("{benchmark_dir}/pigeon_mks_{{sample}}.txt", **config)[0]
+        expand("{benchmark_dir}/pigeon_make_seurat_{{sample}}.txt", **config)[0]
     params:
         outdir=expand("{seurat_dir}/{{sample}}", **config),
     threads: 4

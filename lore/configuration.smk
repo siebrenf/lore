@@ -27,7 +27,7 @@ for directory in [
     "pbmm2_dir",
 	"pigeon_sort_dir",
     "pigeon_classify_dir",  # 3-CollapsedTranscripts/
-	"pigeon_filter_dir",
+	#"pigeon_filter_dir",
 	"pigeon_report_dir",
     "seurat_dir",  # 4-SeuratMatrix/
 	"qc_dir",
