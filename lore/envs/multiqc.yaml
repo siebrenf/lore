@@ -1,0 +1,7 @@
+name: multiqc
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - bioconda::multiqc
+  - conda-forge::conda-ecosystem-user-package-isolation=1.0

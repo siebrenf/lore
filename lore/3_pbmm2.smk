@@ -40,6 +40,7 @@ rule pbmm2_align:
         mmi=rules.pbmm2_index.output.mmi,
     output:
         bam=expand("{pbmm2_dir}/{{sample}}.bam", **config),
+        bai=expand("{pbmm2_dir}/{{sample}}.bam.bai", **config),
     log:
         expand("{pbmm2_dir}/{{sample}}.log", **config),
     benchmark:

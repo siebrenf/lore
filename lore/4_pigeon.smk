@@ -72,7 +72,9 @@ rule pigeon_classify:
     output:
         json=expand("{pigeon_classify_dir}/{{sample}}.report.json", **config),
         summary=expand("{pigeon_classify_dir}/{{sample}}.summary.txt", **config),
-        classification=expand("{pigeon_classify_dir}/{{sample}}_classification.txt", **config),
+        classification=expand(
+            "{pigeon_classify_dir}/{{sample}}_classification.txt", **config
+        ),
         junctions=expand("{pigeon_classify_dir}/{{sample}}_junctions.txt", **config),
     log:
         expand("{pigeon_classify_dir}/{{sample}}_classify.log", **config),
@@ -114,10 +116,12 @@ rule pigeon_filter:
         gff=rules.pigeon_sort.output.gff,
     output:
         json=expand(
-            "{pigeon_classify_dir}/{{sample}}_classification.filtered.report.json", **config
+            "{pigeon_classify_dir}/{{sample}}_classification.filtered.report.json",
+            **config,
         ),
         summary=expand(
-            "{pigeon_classify_dir}/{{sample}}_classification.filtered.summary.txt", **config
+            "{pigeon_classify_dir}/{{sample}}_classification.filtered.summary.txt",
+            **config,
         ),
         classification=expand(
             "{pigeon_classify_dir}/{{sample}}_classification.filtered_lite_classification.txt",

@@ -15,7 +15,7 @@ if not os.path.exists(config["results_dir"]):
 
 for directory in [
     "benchmark_dir",
-	"scripts_dir",
+    "scripts_dir",
     "ccs_dir",  # 0-CCS/
     "skera_dir",  # 1-Sreads/
     "lima_dir",
@@ -25,12 +25,12 @@ for directory in [
     "isoseq_dedup_dir",  # 2-DeduplicatedReads/
     "isoseq_collapse_dir",
     "pbmm2_dir",
-	"pigeon_sort_dir",
+    "pigeon_sort_dir",
     "pigeon_classify_dir",  # 3-CollapsedTranscripts/
-	#"pigeon_filter_dir",
-	"pigeon_report_dir",
+    # "pigeon_filter_dir",
+    "pigeon_report_dir",
     "seurat_dir",  # 4-SeuratMatrix/
-	"qc_dir",
+    "qc_dir",
 ]:
     if config.get(directory) is None:
         suffix = directory.rsplit("_", 1)[0]

@@ -17,12 +17,13 @@ rule qc_scripts:
             --output-file {log} \
             --output-document={output.detail} \
             {params.prefix}/report_detail.R
-			
-		wget \
+            
+        wget \
             --output-file {log} \
             --output-document={output.summary} \
             {params.prefix}/report_summary.R
         """
+
 
 rule adapters:
     output:

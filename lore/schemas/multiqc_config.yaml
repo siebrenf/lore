@@ -1,0 +1,32 @@
+# module_order:
+#   - lima/counts:
+#       contents: "IdxFirst\tIdxCombined\tIdxFirstNamed\tIdxCombinedNamed\tCounts\tMeanScore"
+#       num_lines: 1
+#   - lima/summary:
+#       contents: ZMWs above all thresholds
+#       max_filesize: 1024
+#       num_lines: 2
+#   - isoseq/refine-csv:
+#       contents: id,strand,fivelen,threelen,polyAlen,insertlen,primer
+#       fn: "*.csv"
+#   - isoseq/refine-json:
+#       contents: '"num_reads_fl"'
+#       fn: "*.json"
+
+# report_section_order:
+#   explanation:
+#     order: 1000
+
+# table_columns_visible:
+#     fastp:
+#       pct_duplication: True
+#       after_filtering_q30_rate: False
+#       after_filtering_q30_bases: False
+#       after_filtering_gc_content: True
+#       pct_surviving: True
+#       pct_adapter: True
+
+# custom_data:
+#     macs2_upset:
+#         section_name: 'Peaks per sample distribution (macs2)'
+#         description: 'The distribution of peaks between samples. An upset plot is like a venn diagram, but is easier to read with many samples. This figure shows the overlap of peaks between conditions/samples. '

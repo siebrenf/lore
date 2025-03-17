@@ -3,7 +3,8 @@ from snakemake.io import expand
 
 rule skera:
     """
-    Deconcatenate HiFi reads to produce S-reads that represent the original cDNA molecules. 
+    Deconcatenate Kinnex PacBio HiFi reads to produce S-reads that represent the 
+    original cDNA molecules. 
     
     Sources: 
       - https://skera.how
