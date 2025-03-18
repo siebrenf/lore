@@ -1,39 +1,67 @@
 custom_data:  # https://docs.seqera.io/multiqc/custom_content#section-configuration
-  general_stats:
-    plot_type: "generalstats"
-  skera:
-    id: "skera"
-    section_name: "Skera"
-    description: "TODO: Skera description"
-    plot_type: "table"  # generalstats | table | bargraph | linegraph | boxplot | scatter | heatmap | violin
-  lima:
-    section_name: "Lima"
-    description: "TODO: Lima description"
-  isoseq:
-    section_name: "Iso-seq"
-    description: "TODO: Iso-seq description"
-    plot_type: "table"
+  # general_stats:
+  #   plot_type: "generalstats"  # generalstats | table | bargraph | linegraph | boxplot | scatter | heatmap | violin
+  reads_per_step:
+    id: "reads_per_step"
+    section_name: "Reads per processing step"
+    description: "The number of reads found after each processing step. 
+    1: Circular consensus sequencing (HiFi) reads. 
+    2: Segmented reads. 
+    3: Full Length reads. 
+    4: Non-Chimeric reads. 
+    5: PolyA-tailed reads. 
+    6: Barcoded reads.
+    7: Final reads."
+    plot_type: "linegraph"
+    pconfig:
+      logswitch: True
+      logswitch_active: True
+      logswitch_label: "Log10"
+      ylab: "number of reads"
+      xlab: "processing step"
+      categories: True
+  isoseq_correct:
+    id: "isoseq_correct"
+    section_name: "Barcode corrections"
+    plot_type: "bargraph"
+    description: "TODO"
+  # skera:
+  #   id: "skera"
+  #   section_name: "Skera"
+  #   description: "TODO: Skera description"
+  #   plot_type: "table"
+  # lima:
+  #   section_name: "Lima"
+  #   description: "TODO: Lima description"
+  # isoseq:
+  #   section_name: "Iso-seq"
+  #   description: "TODO: Iso-seq description"
+  #   plot_type: "table"
 
 sp:
-  general_stats:
-    fn: "*general_stats*.txt"
-  skera:
-    fn: "multiqc_skera_summary.txt"
-  lima:
-    fn: "multiqc_lima.tsv"
-  isoseq:
-    fn: "multiqc_isoseq.tsv"
+  # general_stats:
+  #   fn: "*general_stats*.txt"
+  reads_per_step:
+    fn: "reads_per_step.tsv"
+  isoseq_correct:
+    fn: "isoseq_correct.tsv"
+  # skera:
+  #   fn: "multiqc_skera_summary.txt"
+  # lima:
+  #   fn: "multiqc_lima.tsv"
+  # isoseq:
+  #   fn: "multiqc_isoseq.tsv"
 
-table_columns_visible:
-  general_stats:
-    m_hifi_reads: True
-    m_s_reads: True
-    avg_len_s_reads: False
-    pct_full_array: False
-    avg_array_size: False
-  skera:
-    m_hifi_reads: True
-    m_s_reads: True
-    avg_len_s_reads: True
-    pct_full_array: True
-    avg_array_size: True
+# table_columns_visible:
+#   general_stats:
+#     m_hifi_reads: True
+#     m_s_reads: True
+#     avg_len_s_reads: False
+#     pct_full_array: False
+#     avg_array_size: False
+#   skera:
+#     m_hifi_reads: True
+#     m_s_reads: True
+#     avg_len_s_reads: True
+#     pct_full_array: True
+#     avg_array_size: True
