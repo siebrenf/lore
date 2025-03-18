@@ -114,6 +114,9 @@ rule multiqc:
         multiqc \
         {input.files} \
         --no-ai \
+        --force \
+        --module samtools \
+        --module custom_content \
         --outdir {params.outdir} \
         --filename multiqc_report.html \
         --config {params.schema} \
