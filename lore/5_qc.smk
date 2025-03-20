@@ -172,7 +172,8 @@ rule mt_nuc_ratio_calculator:
 
 def qc_files(wildcards):
     files = {
-        "samtools": [],
+        "samtools_stats": [],
+        "samtools_coverage": [],
         "mtnucratio": [],
     }
     for sample in config["samples"]:
