@@ -1,0 +1,7 @@
+name: samtools
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - bioconda::samtools
+  - conda-forge::conda-ecosystem-user-package-isolation=1.0

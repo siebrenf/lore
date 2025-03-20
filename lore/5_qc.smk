@@ -1,4 +1,4 @@
-from snakemake.io import expand, directory
+from snakemake.io import expand, directory, unpack
 
 
 rule lima_qc_detail:
@@ -82,12 +82,13 @@ rule lima_qc_summary:
 def reads_per_step_input(wildcards):
     files = {
         "skera": [],
+        "lima": [],
         "refine": [],
         "correct": [],
     }
     for sample in config["samples"]:
         files["skera"].append(f'{config["skera_dir"]}/{sample}.summary.json')
-        # TODO: lima
+        files["lima"].append(f'{config["lima_dir"]}/{sample}.lima.summary')
         files["refine"].append(
             f'{config["isoseq_refine_dir"]}/{sample}.filter_summary.report.json'
         )
@@ -119,27 +120,88 @@ rule isoseq_correct_qc:
         "scripts/isoseq_correct.py"
 
 
+rule samtools_stats:
+    input:
+        bam=expand("{{path}}/{{sample}}.bam", **config),
+    output:
+        tsv=expand("{{path}}/{{sample}}.stats.tsv", **config),
+    log:
+        expand("{{path}}/{{sample}}_stats.log", **config),
+    threads: 4
+    conda:
+        "envs/samtools.yaml"
+    shell:
+        """
+        samtools stats --threads {threads} {input.bam} 1> {output.tsv} 2> {log}
+        """
+
+
+rule samtools_coverage:
+    input:
+        bam=expand("{pbmm2_dir}/{{sample}}.bam", **config),
+    output:
+        tsv=expand("{pbmm2_dir}/{{sample}}.coverage.tsv", **config),
+    log:
+        expand("{pbmm2_dir}/{{sample}}_samtools_coverage.log", **config),
+    conda:
+        "envs/samtools.yaml"
+    shell:
+        """
+        samtools coverage {input.bam} --output {output.tsv} 2> {log}
+        """
+
+
+rule mt_nuc_ratio_calculator:
+    """
+    Estimate the amount of nuclear and mitochondrial reads in a sample. 
+    """
+    input:
+        bam=rules.pbmm2_align.output,
+    output:
+        txt=expand("{pbmm2_dir}/{{sample}}.bam.mtnucratio", **config),
+        json=expand("{pbmm2_dir}/{{sample}}.bam.mtnucratiomtnuc.json", **config),
+    params:
+        mitochondria=config["mitochondria"],
+    conda:
+        "envs/mtnucratio.yaml"
+    shell:
+        """
+        mtnucratio {input.bam} {params.mitochondria}
+        """
+
+
+def qc_files(wildcards):
+    files = {
+        "samtools": [],
+        "mtnucratio": [],
+    }
+    for sample in config["samples"]:
+        files["samtools_stats"].append(f'{config["skera_dir"]}/{sample}.stats.tsv')
+        files["samtools_stats"].append(
+            f'{config["isoseq_dedup_dir"]}/{sample}.stats.tsv'
+        )
+        files["samtools_stats"].append(f'{config["pbmm2_dir"]}/{sample}.stats.tsv')
+        files["samtools_coverage"].append(
+            f'{config["pbmm2_dir"]}/{sample}.coverage.tsv'
+        )
+        files["mtnucratio"].append(
+            f'{config["pbmm2_dir"]}/{sample}.bam.mtnucratiomtnuc.json'
+        )
+    return files
+
+
 rule multiqc:
     """
     Aggregate Quality Control data into a single MultiQC report.
     """
     input:
+        # aggregated files
         rules.reads_per_step_qc.output,
         rules.isoseq_correct_qc.output,
+        # per-sample files
+        unpack(qc_files),
+        # everything in the QC directory
         dir=config["qc_dir"],
-        # files=set(
-        #     [
-        #         config["skera_dir"],
-        #         config["lima_dir"],
-        #         config["isoseq_refine_dir"],
-        #         config["isoseq_correct_dir"],
-        #         config["pbmm2_dir"],
-        #         config["isoseq_collapse_dir"],
-        #         config["pigeon_classify_dir"],
-        #         config["pigeon_report_dir"],
-        #         *[f'{config["qc_dir"]}/{sample}' for sample in config["samples"]],
-        #     ]
-        # ),
     output:
         report=expand("{qc_dir}/multiqc_report.html", **config),
         data=directory(expand("{qc_dir}/multiqc_report_data", **config)),
@@ -155,13 +217,14 @@ rule multiqc:
     shell:
         """
         multiqc \
-        {input.dir} \
+        {input} \
         --outdir {params.dir} \
         --filename multiqc_report.html \
         --config {params.schema} \
         --no-ai \
         --force \
         --module samtools \
+        --module mtnucratio \
         --module custom_content \
         --verbose > {log} 2>&1
         """

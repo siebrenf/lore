@@ -7,6 +7,7 @@ genome_fasta:
   /bank/genomes/GRCh38/GRCh38.fa
 gene_annotation_gtf:
   /bank/genomes/GRCh38/GRCh38.annotation.gtf
+mitochondria: "chrM"
 
 adapters:
   # Sequencing adapters.
@@ -33,3 +34,4 @@ lima: "--isoseq --peek-guess"
 isoseq_tag: "--design 16B-10U-13X-T"
 isoseq_refine: "--require-polya"
 isoseq_bcstats: "--molecular"
+qc_report: True

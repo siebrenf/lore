@@ -12,8 +12,7 @@ with open(snakemake.output[0], "w") as f1:  # f'{config["qc_dir"]}/reads_per_ste
             "ccs_reads": None,
             "s_reads": None,
             # lima (primers)
-            # TODO: low scores
-            # TODO: incorrect primer pairs
+            "primed_reads": None,  # matching primers + passing minimal thresholds
             # refine (reads)
             "fl_reads": None,
             "flnc_reads": None,
@@ -36,6 +35,14 @@ with open(snakemake.output[0], "w") as f1:  # f'{config["qc_dir"]}/reads_per_ste
                 data["ccs_reads"] = value
             elif key == "s_reads":
                 data["s_reads"] = value
+
+        f_lima = snakemake.input.lima[n]  # f'{config["skera_dir"]}/{sample}.lima.summary'
+        dct = {}
+        with open(f_lima) as f2:
+            for line in f2:
+                if line.startswith("Reads above all thresholds (A) : "):
+                    data["primed_reads"] = line.split(": ")[1].strip()
+                    break
 
         f_refine = snakemake.input.refine[n]  # f'{config["isoseq_refine_dir"]}/{sample}.filter_summary.report.json'
         with open(f_refine) as f2:

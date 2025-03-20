@@ -7,11 +7,12 @@ custom_data:  # https://docs.seqera.io/multiqc/custom_content#section-configurat
     description: "The number of reads found after each processing step. 
     1: Circular consensus sequencing (HiFi) reads. 
     2: Segmented reads. 
-    3: Full Length reads. 
-    4: Non-Chimeric reads. 
-    5: PolyA-tailed reads. 
-    6: Barcoded reads.
-    7: Final reads."
+    3: Primed reads.
+    4: Full Length reads. 
+    5: Non-Chimeric reads. 
+    6: PolyA-tailed reads. 
+    7: Barcoded reads.
+    8: Final reads."
     plot_type: "linegraph"
     pconfig:
       logswitch: True
@@ -24,7 +25,7 @@ custom_data:  # https://docs.seqera.io/multiqc/custom_content#section-configurat
     id: "isoseq_correct"
     section_name: "Barcode corrections"
     plot_type: "bargraph"
-    description: "TODO"
+    description: "The number of barcodes with corrected barcode mismatches."
   # skera:
   #   id: "skera"
   #   section_name: "Skera"

@@ -51,19 +51,17 @@ nice snakemake --use-conda --snakefile lore/Snakefile --configfile config.yaml -
   
   - MultiQC report containing:
     - skera
-      - summary
-      - ligations
-    - lima ([supported by MultiQC](https://docs.seqera.io/multiqc/modules/lima), but broken)
-      - consensus
-      - summary
-    - isoseq refine ([supported by MultiQC](https://docs.seqera.io/multiqc/modules/isoseq), but may be broken)
-      - report
-      - consensus
+      - summary: table
+    - lima
+      - summary: table
+    - isoseq refine [x]
     - isoseq correct
-      - report
-    - isoseq bcstats ?
+      - report: table
+      - bcstats: table
+      - plots: https://isoseq.how/umi/cell-calling.html
     - pbmm2
-      - samtools ([supported by MultiQC](https://docs.seqera.io/multiqc/modules/samtools))
+      - samtools [x]
+        - TODO: split by stage
     - isoseq collapse
       - report
     - pigeon classify
