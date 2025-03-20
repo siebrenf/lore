@@ -1,4 +1,4 @@
-from snakemake.io import expand
+from snakemake.io import expand, temp
 
 
 rule isoseq_tag:
@@ -13,14 +13,13 @@ rule isoseq_tag:
         bam=rules.lima.output.bam,
     output:
         bam=expand("{isoseq_tag_dir}/{{sample}}.bam", **config),
-        # unrequested files:
         pbi=expand("{isoseq_tag_dir}/{{sample}}.bam.pbi", **config),
     log:
         expand("{isoseq_tag_dir}/{{sample}}.log", **config),
     benchmark:
         expand("{benchmark_dir}/isoseq_tag_{{sample}}.txt", **config)[0]
     params:
-        design=config["design"],  # Barcoding design. Specifies which bases to use as cell/molecular barcodes
+        flags=config["isoseq_tag"],
     threads: 16
     resources:
         mem_mb=500,
@@ -30,9 +29,10 @@ rule isoseq_tag:
             --log-file {log} \
             --log-level TRACE \
             --num-threads {threads} \
-            --design {params.design} \
+            {params.flags} \
             {input.bam} \
-            {output.bam} > {log} 2>&1
+            {output.bam} \
+            --verbose > {log} 2>&1
         """
 
 
@@ -47,13 +47,13 @@ rule isoseq_refine:
 
     Sources:
       - https://isoseq.how/umi/cli-workflow.html#step-4---refine
+      - https://isoseq.how/umi/isoseq-correct.html
     """
     input:
         bam=rules.isoseq_tag.output.bam,
         primers=rules.primers.output.fasta,
     output:
         bam=expand("{isoseq_refine_dir}/{{sample}}.bam", **config),
-        # unrequested files:
         pbi=expand("{isoseq_refine_dir}/{{sample}}.bam.pbi", **config),
         xml=expand("{isoseq_refine_dir}/{{sample}}.consensusreadset.xml", **config),
         json=expand(
@@ -64,19 +64,22 @@ rule isoseq_refine:
         expand("{isoseq_refine_dir}/{{sample}}.log", **config),
     benchmark:
         expand("{benchmark_dir}/isoseq_ref_{{sample}}.txt", **config)[0]
+    params:
+        flags=config["isoseq_refine"],
     threads: 16
     resources:
         mem_mb=500,
     shell:
         """
         isoseq refine \
-            --require-polya \
             --log-file {log} \
             --log-level TRACE \
             --num-threads {threads} \
+            {params.flags} \
             {input.bam} \
             {input.primers} \
-            {output.bam} > {log} 2>&1
+            {output.bam} \
+            --verbose > {log} 2>&1
         """
 
 
@@ -98,17 +101,18 @@ rule isoseq_correct:
         barcodes=rules.barcodes.output.txt,
     output:
         bam=expand("{isoseq_correct_dir}/{{sample}}.bam", **config),
-        # unrequested files:
         pbi=expand("{isoseq_correct_dir}/{{sample}}.bam.pbi", **config),
         json=expand("{isoseq_correct_dir}/{{sample}}.report.json", **config),
-        pbi2=expand("{isoseq_correct_dir}/{{sample}}_intermediate.bam.pbi", **config),
+        pbi2=temp(
+            expand("{isoseq_correct_dir}/{{sample}}_intermediate.bam.pbi", **config)
+        ),
     log:
         expand("{isoseq_correct_dir}/{{sample}}.log", **config),
     benchmark:
         expand("{benchmark_dir}/isoseq_cor_{{sample}}.txt", **config)[0]
-    threads: 16  # TODO: check
+    threads: 16
     resources:
-        mem_mb=40_000,  # TODO: check
+        mem_mb=30_000,
     shell:
         """
         isoseq correct \
@@ -117,7 +121,43 @@ rule isoseq_correct:
             --num-threads {threads} \
             --barcodes {input.barcodes} \
             {input.bam} \
-            {output.bam} > {log} 2>&1
+            {output.bam} \
+            --verbose > {log} 2>&1
+        """
+
+
+rule isoseq_bcstats:
+    """
+    Generates stats for group barcodes and (optionally) molecular barcodes
+    
+    Sources:
+      - https://isoseq.how/umi/isoseq-bcstats.html
+    """
+    input:
+        bam=rules.isoseq_correct.output.bam,
+    output:
+        tsv=expand("{isoseq_correct_dir}/{{sample}}_bcstats.tsv", **config),
+        json=expand("{isoseq_correct_dir}/{{sample}}_bcstats.json", **config),
+    log:
+        expand("{isoseq_correct_dir}/{{sample}}_bcstats.log", **config),
+    benchmark:
+        expand("{benchmark_dir}/isoseq_bcstats_{{sample}}.txt", **config)[0]
+    params:
+        flags=config["isoseq_bcstats"],
+    threads: 16
+    resources:
+        mem_mb=20_000,
+    shell:
+        """
+        isoseq bcstats \
+            --log-file {log} \
+            --log-level TRACE \
+            --num-threads {threads} \
+            --json {output.json} \
+            -o {output.tsv} \
+            {params.flags} \
+            {input.bam} \
+            --verbose > {log} 2>&1
         """
 
 
@@ -134,13 +174,12 @@ rule isoseq_groupdedup:
         bam=rules.isoseq_correct.output.bam,
     output:
         bam=expand("{isoseq_dedup_dir}/{{sample}}.bam", **config),
-        # unrequested files:
         pbi=expand("{isoseq_dedup_dir}/{{sample}}.bam.pbi", **config),
-        fasta=expand("{isoseq_dedup_dir}/{{sample}}.fasta", **config),
+        fasta=expand("{isoseq_dedup_dir}/{{sample}}.fasta", **config),  # TODO: use for separate analysis?
     log:
         expand("{isoseq_dedup_dir}/{{sample}}.log", **config),
     benchmark:
-        expand("{benchmark_dir}/isoseq_gdd_{{sample}}.txt", **config)[0]
+        expand("{benchmark_dir}/isoseq_groupdedup_{{sample}}.txt", **config)[0]
     threads: 8
     resources:
         mem_mb=8_000,
@@ -151,7 +190,8 @@ rule isoseq_groupdedup:
             --log-level TRACE \
             --num-threads {threads} \
             {input.bam} \
-            {output.bam} > {log} 2>&1
+            {output.bam} \
+            --verbose > {log} 2>&1
         """
 
 
@@ -194,5 +234,6 @@ rule isoseq_collapse:
             --log-level TRACE \
             --num-threads {threads} \
             {input.bam} \
-            {output.gff} > {log} 2>&1
+            {output.gff} \
+            --verbose > {log} 2>&1
         """

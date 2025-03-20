@@ -1,3 +1,13 @@
+results_dir:
+  /bank/experiments/2025-03-lore
+samples:
+  - segmented
+
+genome_fasta:
+  /bank/genomes/GRCh38/GRCh38.fa
+gene_annotation_gtf:
+  /bank/genomes/GRCh38/GRCh38.annotation.gtf
+
 adapters:
   # Sequencing adapters.
   #   Docs: https://skera.how/adapters
@@ -13,19 +23,13 @@ barcodes:
   #  Docs: https://isoseq.how/umi/cli-workflow.html#step-5---cell-barcode-correction-and-real-cell-identification
   https://downloads.pacbcloud.com/public/dataset/Kinnex-single-cell-RNA/REF-10x_barcodes/3M-5pgex-jan-2023.REVCOMP.txt.gz
 
-design:
-  # Barcoding design.
-  #  Specifies which bases to use as cell/molecular barcodes.
-  #  Docs: https://isoseq.how/umi/umi-barcode-design.html
-  16B-10U-13X-T
-
-genome_fasta:
-  /scratch/siebrenf/lore/GRCh38/GRCh38.fa
-gene_annotation_gtf:
-  /scratch/siebrenf/lore/GRCh38/GRCh38.annotation.gtf
-results_dir:
-  /scratch/siebrenf/lore2
-ccs_dir:
-  /scratch/siebrenf/lore/ccs
-samples:
-  - segmented
+lima: "--isoseq --peek-guess"
+# Barcoding design.
+#  Specifies which bases to use as cell/molecular barcodes.
+#  Docs:
+#    - https://isoseq.how/umi/umi-barcode-design.html
+#    - https://isoseq.how/umi/cli-workflow.html#step-3---tag
+#    - https://kb.10xgenomics.com/hc/en-us/articles/360001493051-What-is-a-template-switch-oligo-TSO
+isoseq_tag: "--design 16B-10U-13X-T"
+isoseq_refine: "--require-polya"
+isoseq_bcstats: "--molecular"

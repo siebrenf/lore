@@ -1,4 +1,4 @@
-from snakemake.io import expand
+from snakemake.io import expand, temp
 
 
 rule lima:
@@ -15,11 +15,10 @@ rule lima:
         primers=rules.primers.output.fasta,
     output:
         bam=expand("{lima_dir}/{{sample}}.bam", **config),
-        # unrequested files:
         pbi=expand("{lima_dir}/{{sample}}.bam.pbi", **config),
         xml=expand("{lima_dir}/{{sample}}.consensusreadset.xml", **config),
         json=expand("{lima_dir}/{{sample}}.json", **config),
-        clips=expand("{lima_dir}/{{sample}}.lima.clips", **config),
+        clips=temp(expand("{lima_dir}/{{sample}}.lima.clips", **config)),
         counts=expand("{lima_dir}/{{sample}}.lima.counts", **config),
         report=expand("{lima_dir}/{{sample}}.lima.report", **config),
         summary=expand("{lima_dir}/{{sample}}.lima.summary", **config),
@@ -29,17 +28,17 @@ rule lima:
         expand("{benchmark_dir}/lima_{{sample}}.txt", **config)[0]
     params:
         dir=config["lima_dir"],
+        flags=config["lima"],
     threads: 128
     resources:
         mem_mb=3_500,
     shell:
         """
         lima \
-            --isoseq \
-            --peek-guess \
             --num-threads {threads} \
             --log-file {log} \
             --log-level TRACE \
+            {params.flags} \
             {input.bam} \
             {input.primers} \
             {output.bam} > {log} 2>&1

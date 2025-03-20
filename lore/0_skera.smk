@@ -1,4 +1,4 @@
-from snakemake.io import expand
+from snakemake.io import expand, temp
 
 
 rule skera:
@@ -15,11 +15,10 @@ rule skera:
         adapters=rules.adapters.output.fasta,
     output:
         bam=expand("{skera_dir}/{{sample}}.bam", **config),
-        # unrequested files:
         pbi=expand("{skera_dir}/{{sample}}.bam.pbi", **config),
         lig=expand("{skera_dir}/{{sample}}.ligations.csv", **config),
-        bamnp=expand("{skera_dir}/{{sample}}.non_passing.bam", **config),
-        pbinp=expand("{skera_dir}/{{sample}}.non_passing.bam.pbi", **config),
+        bam_np=temp(expand("{skera_dir}/{{sample}}.non_passing.bam", **config)),
+        pbi_np=temp(expand("{skera_dir}/{{sample}}.non_passing.bam.pbi", **config)),
         rl=expand("{skera_dir}/{{sample}}.read_lengths.csv", **config),
         csv=expand("{skera_dir}/{{sample}}.summary.csv", **config),
         json=expand("{skera_dir}/{{sample}}.summary.json", **config),

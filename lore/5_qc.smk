@@ -88,7 +88,9 @@ def reads_per_step_input(wildcards):
     for sample in config["samples"]:
         files["skera"].append(f'{config["skera_dir"]}/{sample}.summary.json')
         # TODO: lima
-        files["refine"].append(f'{config["isoseq_refine_dir"]}/{sample}.filter_summary.report.json')
+        files["refine"].append(
+            f'{config["isoseq_refine_dir"]}/{sample}.filter_summary.report.json'
+        )
         files["correct"].append(f'{config["isoseq_correct_dir"]}/{sample}.report.json')
     return files
 
@@ -98,7 +100,7 @@ rule reads_per_step_qc:
         # skera=set([f'{config["skera_dir"]}/{sample}.summary.json' for sample in config["samples"]]),
         # refine=set([f'{config["isoseq_refine_dir"]}/{sample}.filter_summary.report.json' for sample in config["samples"]]),
         # correct=set([f'{config["isoseq_correct_dir"]}/{sample}.report.json' for sample in config["samples"]]),
-        unpack(reads_per_step_input)
+        unpack(reads_per_step_input),
     output:
         expand("{qc_dir}/reads_per_step.tsv", **config),
     script:
@@ -107,7 +109,10 @@ rule reads_per_step_qc:
 
 rule isoseq_correct_qc:
     input:
-        [f'{config["isoseq_correct_dir"]}/{sample}.report.json' for sample in config["samples"]]
+        [
+            f'{config["isoseq_correct_dir"]}/{sample}.report.json'
+            for sample in config["samples"]
+        ],
     output:
         expand("{qc_dir}/isoseq_correct.tsv", **config),
     script:

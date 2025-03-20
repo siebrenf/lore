@@ -10,7 +10,7 @@ rule pigeon_sort:
     log:
         expand("{pigeon_sort_dir}/{{sample}}.log", **config),
     benchmark:
-        expand("{benchmark_dir}/pigeon_srt_{{sample}}.txt", **config)[0]
+        expand("{benchmark_dir}/pigeon_sort_{{sample}}.txt", **config)[0]
     threads: 1
     resources:
         mem_mb=500,

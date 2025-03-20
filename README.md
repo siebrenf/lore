@@ -23,7 +23,7 @@ snakemake --snakefile lore/Snakefile --configfile config.yaml --dry-run
 
 Run your config:
 ```[bash]
-nice snakemake --use-conda --conda-prefix /scratch/siebrenf/lore2/.snakemake --snakefile lore/Snakefile --configfile config.yaml --resources parallel_downloads=1 mem_mb=100_000 -j 60 > log.txt 2>&1
+nice snakemake --use-conda --snakefile lore/Snakefile --configfile config.yaml --resources parallel_downloads=1 mem_mb=100_000 -j 60 > log.txt 2>&1
 ```
 
 ## Further reading:
@@ -61,6 +61,7 @@ nice snakemake --use-conda --conda-prefix /scratch/siebrenf/lore2/.snakemake --s
       - consensus
     - isoseq correct
       - report
+    - isoseq bcstats ?
     - pbmm2
       - samtools ([supported by MultiQC](https://docs.seqera.io/multiqc/modules/samtools))
     - isoseq collapse

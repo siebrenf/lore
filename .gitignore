@@ -2,6 +2,7 @@
 *__pycache__/
 *.snakemake/
 
+.dev_commands.md
 *.nfs*
 *log*.txt
 *.log
