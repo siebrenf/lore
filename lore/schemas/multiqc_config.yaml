@@ -2,38 +2,8 @@ module order:
   - reads_per_step
   - isoseq_correct
   - samtools
-  #     name: "samtools (raw)"
-  #     extra: "Statistics on raw segmented reads."
-  #     # path_filters_include: '*{{os.path.basename(config["skera_dir"])}}*.stats.tsv'
-  #     # path_filters: 
-  #       # - '{{config["skera_dir"]}}/*.stats.tsv'
-  #       # - '{{config["isoseq_dedup_dir"]}}/*.stats.tsv'
-  #       # - '{{config["pbmm2_dir"]}}/*.stats.tsv'
-  #     path_filters_exclude:
-  #       - '{{config["isoseq_dedup_dir"]}}/*.stats.tsv'
-  #       - '{{config["pbmm2_dir"]}}/*.stats.tsv'
-  # - samtools:
-  #     name: "samtools (filtered)"
-  #     extra: "Statistics on full length, non-chimeric reads with proper primer pairs and barcoded. Only containts deduplicated inserts."
-  #     # path_filters_include: '*{{os.path.basename(config["isoseq_dedup_dir"])}}*.stats.tsv'
-  #     # path_filters: 
-  #     #   - '{{config["isoseq_dedup_dir"]}}/*.stats.tsv'
-  #     path_filters_exclude:
-  #       - '{{config["skera_dir"]}}/*.stats.tsv'
-  #       - '{{config["pbmm2_dir"]}}/*.stats.tsv'
-  # - samtools:
-  #     name: "samtools (aligned)"
-  #     extra: "Statistics on filtered reads that have been aligned to the genome."
-  #     # path_filters_include: '*{{os.path.basename(config["pbmm2_dir"])}}*.stats.tsv'
-  #     # path_filters: 
-  #     #   - '{{config["pbmm2_dir"]}}/*.stats.tsv'
-  #     path_filters_exclude:
-  #       - '{{config["skera_dir"]}}/*.stats.tsv'
-  #       - '{{config["isoseq_dedup_dir"]}}/*.stats.tsv'
 
 custom_data:  # https://docs.seqera.io/multiqc/custom_content#section-configuration
-  # general_stats:
-  #   plot_type: "generalstats"  # generalstats | table | bargraph | linegraph | boxplot | scatter | heatmap | violin
   reads_per_step:
     id: "reads_per_step"
     section_name: "Reads per processing step"
@@ -58,32 +28,12 @@ custom_data:  # https://docs.seqera.io/multiqc/custom_content#section-configurat
     section_name: "Barcode corrections"
     plot_type: "bargraph"
     description: "The number of barcodes with corrected barcode mismatches."
-  # skera:
-  #   id: "skera"
-  #   section_name: "Skera"
-  #   description: "TODO: Skera description"
-  #   plot_type: "table"
-  # lima:
-  #   section_name: "Lima"
-  #   description: "TODO: Lima description"
-  # isoseq:
-  #   section_name: "Iso-seq"
-  #   description: "TODO: Iso-seq description"
-  #   plot_type: "table"
 
 sp:
-  # general_stats:
-  #   fn: "*general_stats*.txt"
   reads_per_step:
     fn: "reads_per_step.tsv"
   isoseq_correct:
     fn: "isoseq_correct.tsv"
-  # skera:
-  #   fn: "multiqc_skera_summary.txt"
-  # lima:
-  #   fn: "multiqc_lima.tsv"
-  # isoseq:
-  #   fn: "multiqc_isoseq.tsv"
 
 table_columns_visible:
   "Samtools: stats":
@@ -95,18 +45,6 @@ table_columns_visible:
     reads_MQ0_percent: True
     raw_total_sequences: True
     insert_size_average: False
-#   general_stats:
-#     m_hifi_reads: True
-#     m_s_reads: True
-#     avg_len_s_reads: False
-#     pct_full_array: False
-#     avg_array_size: False
-#   skera:
-#     m_hifi_reads: True
-#     m_s_reads: True
-#     avg_len_s_reads: True
-#     pct_full_array: True
-#     avg_array_size: True
 
 samtools_coverage:
   # tips: https://docs.seqera.io/multiqc/modules/samtools#coverage
