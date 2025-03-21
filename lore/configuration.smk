@@ -38,6 +38,8 @@ for directory in [
 
 for k, v in config.items():
     if isinstance(k, str) and k.endswith("_dir"):
+        v = os.path.abspath(os.path.expanduser(os.path.expandvars(v)))
+        config[k] = v
         if not os.path.exists(v):
             os.makedirs(v)
 
