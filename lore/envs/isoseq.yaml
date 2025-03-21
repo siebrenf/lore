@@ -1,12 +1,7 @@
-name: lore
+name: isoseq
 channels:
   - conda-forge
   - bioconda
 dependencies:
-  - conda-forge::python
-  - conda-forge::mamba
-  - bioconda::snakemake
+  - bioconda::isoseq
   - conda-forge::conda-ecosystem-user-package-isolation=1.0
-
-  # dev
-  - snakefmt

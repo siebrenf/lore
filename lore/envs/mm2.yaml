@@ -1,12 +1,7 @@
-name: lore
+name: mm2
 channels:
   - conda-forge
   - bioconda
 dependencies:
-  - conda-forge::python
-  - conda-forge::mamba
-  - bioconda::snakemake
+  - bioconda::pbmm2
   - conda-forge::conda-ecosystem-user-package-isolation=1.0
-
-  # dev
-  - snakefmt

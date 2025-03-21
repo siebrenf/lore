@@ -1,12 +1,12 @@
 results_dir:
-  /bank/experiments/2025-03-lore
+  /scratch/siebrenf/lore3
 samples:
   - segmented
 
 genome_fasta:
-  /bank/genomes/GRCh38/GRCh38.fa
+  /scratch/siebrenf/lore/GRCh38/GRCh38.fa
 gene_annotation_gtf:
-  /bank/genomes/GRCh38/GRCh38.annotation.gtf
+  /scratch/siebrenf/lore/GRCh38/GRCh38.annotation.gtf
 mitochondria: "chrM"
 
 adapters:
@@ -22,7 +22,8 @@ primers:
 barcodes:
   # Cell/molecular barcodes.
   #  Docs: https://isoseq.how/umi/cli-workflow.html#step-5---cell-barcode-correction-and-real-cell-identification
-  https://downloads.pacbcloud.com/public/dataset/Kinnex-single-cell-RNA/REF-10x_barcodes/3M-5pgex-jan-2023.REVCOMP.txt.gz
+  # https://downloads.pacbcloud.com/public/dataset/Kinnex-single-cell-RNA/REF-10x_barcodes/3M-5pgex-jan-2023.REVCOMP.txt.gz
+  https://downloads.pacbcloud.com/public/dataset/Kinnex-single-cell-RNA/REF-10x_barcodes/3M-3pgex-may-2023.REVCOMP.txt.gz
 
 lima: "--isoseq --peek-guess"
 # Barcoding design.
