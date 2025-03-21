@@ -15,7 +15,7 @@ custom_data:  # https://docs.seqera.io/multiqc/custom_content#section-configurat
     6: PolyA-tailed reads. 
     7: Barcoded reads.
     8: Final reads."
-    plot_type: "linegraph"
+    plot_type: "linegraph"  # generalstats | table | bargraph | linegraph | boxplot | scatter | heatmap | violin
     pconfig:
       logswitch: True
       logswitch_active: True
@@ -23,8 +23,26 @@ custom_data:  # https://docs.seqera.io/multiqc/custom_content#section-configurat
       ylab: "number of reads"
       xlab: "processing step"
       categories: True
-  isoseq_correct:
-    id: "isoseq_correct"
+  skera:
+    id: "skera"
+    section_name: "Skera"
+    description: "Skera deconcatenates Kinnex HiFi reads to produce S-reads that represent the original cDNA molecules."
+    plot_type: "table"
+  lima:
+    id: "lima"
+    section_name: "Lima"
+    description: "Lima removes and spurious false positives."
+    plot_type: "table"
+  isoseq_correct_stats:
+    parent_id: "isoseq_correct"
+    parent_name: "Iso-seq correct"
+    parent_description: "Iso-seq correct identifies cell barcode errors and corrects them. Additionally, Iso-seq correct estimates which reads are likely to originate from a real cell"
+    id: "isoseq_correct_stats"
+    section_name: "Stats"
+    plot_type: "table"
+  isoseq_correct_barcodes:
+    id: "isoseq_correct_barcodes"
+    parent_id: "isoseq_correct"
     section_name: "Barcode corrections"
     plot_type: "bargraph"
     description: "The number of barcodes with corrected barcode mismatches."
@@ -32,8 +50,14 @@ custom_data:  # https://docs.seqera.io/multiqc/custom_content#section-configurat
 sp:
   reads_per_step:
     fn: "reads_per_step.tsv"
-  isoseq_correct:
+  skera:
+    fn: "skera.tsv"
+  lima:
+    fn: "lima.tsv"
+  isoseq_correct_stats:
     fn: "isoseq_correct.tsv"
+  isoseq_correct_barcodes:
+    fn: "isoseq_correct_barcodes.tsv"
 
 table_columns_visible:
   "Samtools: stats":

@@ -55,4 +55,3 @@ rule all:
         [f'{config["www_dir"]}/multiqc_report.html']
         if config.get("qc_report", True) and config.get("www_dir")
         else [],
-

@@ -108,6 +108,24 @@ rule reads_per_step_qc:
         "scripts/reads_per_step.py"
 
 
+rule skera_qc:
+    input:
+        [f'{config["skera_dir"]}/{sample}.summary.json' for sample in config["samples"]],
+    output:
+        expand("{qc_dir}/skera.tsv", **config),
+    script:
+        "scripts/skera.py"
+
+
+rule lima_qc:
+    input:
+        [f'{config["lima_dir"]}/{sample}.lima.summary' for sample in config["samples"]],
+    output:
+        expand("{qc_dir}/lima.tsv", **config),
+    script:
+        "scripts/lima.py"
+
+
 rule isoseq_correct_qc:
     input:
         [
@@ -115,7 +133,8 @@ rule isoseq_correct_qc:
             for sample in config["samples"]
         ],
     output:
-        expand("{qc_dir}/isoseq_correct.tsv", **config),
+        barcodes=expand("{qc_dir}/isoseq_correct_barcodes.tsv", **config),
+        stats=expand("{qc_dir}/isoseq_correct.tsv", **config),
     script:
         "scripts/isoseq_correct.py"
 
@@ -210,6 +229,8 @@ rule multiqc:
     input:
         # aggregated files
         rules.reads_per_step_qc.output,
+        rules.skera_qc.output,
+        rules.lima_qc.output,
         rules.isoseq_correct_qc.output,
         # per-sample files
         unpack(qc_files),
@@ -228,6 +249,8 @@ rule multiqc:
         "envs/multiqc.yaml"
     shell:
         """
+        # --dirs-depth 1 \
+
         multiqc \
         {input} \
         --outdir {params.dir} \
@@ -236,7 +259,6 @@ rule multiqc:
         --no-ai \
         --no-version-check \
         --force \
-        --dirs-depth 1 \
         --strict \
         --module samtools \
         --module mtnucratio \
@@ -250,7 +272,7 @@ rule webshare:
     Move files to a webshare directory.
     """
     input:
-        report=rules.multiqc.output.report
+        report=rules.multiqc.output.report,
     output:
         report=expand("{www_dir}/multiqc_report.html", **config),
     log:

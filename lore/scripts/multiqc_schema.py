@@ -16,23 +16,32 @@ config = snakemake.params.config
 logging.basicConfig(
     filename=logfile,
     level=logging.DEBUG,
-    format='%(asctime)s %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S',
+    format="%(asctime)s %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
 )
+
+
 def handle_exception(exc_type, exc_value, exc_traceback):
     if issubclass(exc_type, KeyboardInterrupt):
         sys.__excepthook__(exc_type, exc_value, exc_traceback)
         return
 
-    logger.error(''.join(["Uncaught exception: ", *traceback.format_exception(exc_type, exc_value, exc_traceback)]))
+    logger.error(
+        "".join(
+            [
+                "Uncaught exception: ",
+                *traceback.format_exception(exc_type, exc_value, exc_traceback),
+            ]
+        )
+    )
 
 
 sys.excepthook = handle_exception
 
 # capture stdout & stderr
-with open(logfile, 'a') as log, redirect_stdout(log), redirect_stderr(log):
+with open(logfile, "a") as log, redirect_stdout(log), redirect_stderr(log):
     # shutil.copy(f_in, f_out)
-    
+
     with open(f_in) as cookie_schema:
         cookie = cookie_schema.read()
 

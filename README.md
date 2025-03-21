@@ -50,18 +50,15 @@ nice snakemake --use-conda --snakefile lore/Snakefile --configfile config.yaml -
       - https://github.com/kacst-bioinfo-lab/TE_ideintification_pipeline  # nice workflow figure
   
   - MultiQC report containing:
-    - skera
-      - summary: table
-    - lima
-      - summary: table
+    - skera [x]
+    - lima [x]
     - isoseq refine [x]
     - isoseq correct
-      - report: table
+      - report [x]
       - bcstats: table
       - plots: https://isoseq.how/umi/cell-calling.html
     - pbmm2
       - samtools [x]
-        - TODO: split by stage
     - isoseq collapse
       - report
     - pigeon classify
