@@ -142,10 +142,10 @@ rule isoseq_bcstats:
     input:
         bam=rules.isoseq_correct.output.bam,
     output:
-        tsv=expand("{isoseq_correct_dir}/{{sample}}_bcstats.tsv", **config),
-        json=expand("{isoseq_correct_dir}/{{sample}}_bcstats.json", **config),
+        tsv=expand("{isoseq_correct_dir}/{{sample}}.bcstats.tsv", **config),
+        json=expand("{isoseq_correct_dir}/{{sample}}.bcstats.json", **config),
     log:
-        expand("{isoseq_correct_dir}/{{sample}}_bcstats.log", **config),
+        expand("{isoseq_correct_dir}/{{sample}}.bcstats.log", **config),
     benchmark:
         expand("{benchmark_dir}/isoseq_bcstats_{{sample}}.txt", **config)[0]
     params:

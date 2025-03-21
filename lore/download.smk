@@ -5,6 +5,7 @@ rule qc_scripts:
     output:
         detail=expand("{scripts_dir}/report_detail.R", **config),
         summary=expand("{scripts_dir}/report_summary.R", **config),
+        knee=expand("{scripts_dir}/plot_knees.py", **config),
     log:
         expand("{results_dir}/qc_scripts.log", **config),
     params:
@@ -22,6 +23,11 @@ rule qc_scripts:
             --output-file {log} \
             --output-document={output.summary} \
             {params.prefix}/report_summary.R
+
+        wget \
+            --output-file {log} \
+            --output-document={output.knee} \
+            https://downloads.pacbcloud.com/public/dataset/MAS-Seq/PLOT-scripts/plot_knees.py
         """
 
 

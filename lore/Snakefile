@@ -27,31 +27,22 @@ rule all:
             for sample in config["samples"]
         ],
         # QC report
-        [
-            f'{config["qc_dir"]}/{sample}/detail_yield_zmw.png'
-            for sample in config["samples"]
-        ]
-        if config.get("qc_report", True)
-        else [],
-        [
-            f'{config["qc_dir"]}/{sample}/summary_yield_zmw.png'
-            for sample in config["samples"]
-        ]
-        if config.get("qc_report", True)
-        else [],
-        [
-            f'{config["isoseq_correct_dir"]}/{sample}_bcstats.tsv'
-            for sample in config["samples"]
-        ]
-        if config.get("qc_report", True)
-        else [],
+        # [
+        #     f'{config["qc_dir"]}/{sample}/detail_yield_zmw.png'
+        #     for sample in config["samples"]
+        # ]
+        # if config.get("qc_report", True)
+        # else [],
+        # [
+        #     f'{config["qc_dir"]}/{sample}/summary_yield_zmw.png'
+        #     for sample in config["samples"]
+        # ]
+        # if config.get("qc_report", True)
+        # else [],
         [f'{config["qc_dir"]}/multiqc_report.html']
         if config.get("qc_report", True)
         else [],
         # web share
-        # [f'{config["www_dir"]}/{sample}.bw' for sample in config["samples"]]
-        # if config.get("www_dir")
-        # else [],
         [f'{config["www_dir"]}/multiqc_report.html']
         if config.get("qc_report", True) and config.get("www_dir")
         else [],

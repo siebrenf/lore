@@ -1,7 +1,26 @@
-module order:
-  - reads_per_step
-  - isoseq_correct
-  - samtools
+# module_order:
+#   - reads_per_step
+#   - skera
+#   - lima
+#   - isoseq_correct
+#   - samtools
+#   - isoseq_collapse
+
+report_section_order:
+  reads_per_step:
+    order: 1000
+  skera:
+    order: 999
+  lima:
+    order: 998
+  isoseq_correct:
+    order: 997
+  knee_plots:
+    order: 997
+  samtools:
+    order: 996
+  isoseq_collapse:
+    order: 995
 
 custom_data:  # https://docs.seqera.io/multiqc/custom_content#section-configuration
   reads_per_step:
@@ -26,17 +45,17 @@ custom_data:  # https://docs.seqera.io/multiqc/custom_content#section-configurat
   skera:
     id: "skera"
     section_name: "Skera"
-    description: "Skera deconcatenates Kinnex HiFi reads to produce S-reads that represent the original cDNA molecules."
+    description: "Deconcatenates Kinnex HiFi reads to produce S-reads that represent the original cDNA molecules."
     plot_type: "table"
   lima:
     id: "lima"
     section_name: "Lima"
-    description: "Lima removes and spurious false positives."
+    description: "Removes and spurious false positives."
     plot_type: "table"
   isoseq_correct_stats:
     parent_id: "isoseq_correct"
     parent_name: "Iso-seq correct"
-    parent_description: "Iso-seq correct identifies cell barcode errors and corrects them. Additionally, Iso-seq correct estimates which reads are likely to originate from a real cell"
+    parent_description: "Identifies cell barcode errors and corrects them. Additionally, Iso-seq correct estimates which reads are likely to originate from a real cell"
     id: "isoseq_correct_stats"
     section_name: "Stats"
     plot_type: "table"
@@ -46,6 +65,20 @@ custom_data:  # https://docs.seqera.io/multiqc/custom_content#section-configurat
     section_name: "Barcode corrections"
     plot_type: "bargraph"
     description: "The number of barcodes with corrected barcode mismatches."
+  isoseq_bcstats:
+    id: "isoseq_bcstats"
+    parent_id: "isoseq_correct"
+    section_name: "Barcode stats"
+    plot_type: "table"
+  knee_plots:
+    if: "knee_plots"
+    section_name: "Knee plots"
+    description: "The pink line shows the real cells labeled."
+  isoseq_collapse:
+    id: "isoseq_collapse"
+    section_name: "Iso-seq collapse"
+    plot_type: "table"
+    description: "Collapses redundant transcripts into unique isoforms based on exonic structures."
 
 sp:
   reads_per_step:
@@ -58,6 +91,13 @@ sp:
     fn: "isoseq_correct.tsv"
   isoseq_correct_barcodes:
     fn: "isoseq_correct_barcodes.tsv"
+  isoseq_bcstats:
+    fn: "isoseq_bcstats.tsv"
+  knee_plots:
+    fn: "*.knee_mqc.png"
+  isoseq_collapse:
+    fn: "isoseq_collapse.tsv"
+ignore_images: false
 
 table_columns_visible:
   "Samtools: stats":

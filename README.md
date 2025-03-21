@@ -55,12 +55,13 @@ nice snakemake --use-conda --snakefile lore/Snakefile --configfile config.yaml -
     - isoseq refine [x]
     - isoseq correct
       - report [x]
-      - bcstats: table
-      - plots: https://isoseq.how/umi/cell-calling.html
+      - bcstats [x]
+      - plots: 
+        - https://isoseq.how/umi/cell-calling.html 
+        - TODO: add sample names
     - pbmm2
       - samtools [x]
-    - isoseq collapse
-      - report
+    - isoseq collapse [x]
     - pigeon classify
       - summary
       - filtered summary
@@ -68,8 +69,6 @@ nice snakemake --use-conda --snakefile lore/Snakefile --configfile config.yaml -
       - report summary
     - pigeon report
       - saturation
-    - qc
-      - all figures
   
   - what to do with pbmm2 unmapped reads:
     - second pass to the alignment stage to specifically map repeat elements?
