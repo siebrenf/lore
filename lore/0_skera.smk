@@ -29,6 +29,8 @@ rule skera:
     threads: 48
     resources:
         mem_mb=2_000,
+    conda:
+        "envs/skera.yaml"
     shell:
         """
         skera split \

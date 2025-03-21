@@ -48,3 +48,11 @@ rule all:
         [f'{config["qc_dir"]}/multiqc_report.html']
         if config.get("qc_report", True)
         else [],
+        # web share
+        # [f'{config["www_dir"]}/{sample}.bw' for sample in config["samples"]]
+        # if config.get("www_dir")
+        # else [],
+        [f'{config["www_dir"]}/multiqc_report.html']
+        if config.get("qc_report", True) and config.get("www_dir")
+        else [],
+

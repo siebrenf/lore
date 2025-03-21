@@ -16,6 +16,8 @@ rule pbmm2_index:
     threads: 3
     resources:
         mem_mb=40_000,
+    conda:
+        "envs/mm2.yaml"
     shell:
         """
         pbmm2 index \
@@ -48,6 +50,8 @@ rule pbmm2_align:
     threads: 24
     resources:
         mem_mb=40_000,
+    conda:
+        "envs/mm2.yaml"
     shell:
         """
         pbmm2 align \

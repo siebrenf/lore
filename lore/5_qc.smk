@@ -97,10 +97,10 @@ def reads_per_step_input(wildcards):
 
 
 rule reads_per_step_qc:
+    """
+    Generate a table with the number of each per processing step for each sample.
+    """
     input:
-        # skera=set([f'{config["skera_dir"]}/{sample}.summary.json' for sample in config["samples"]]),
-        # refine=set([f'{config["isoseq_refine_dir"]}/{sample}.filter_summary.report.json' for sample in config["samples"]]),
-        # correct=set([f'{config["isoseq_correct_dir"]}/{sample}.report.json' for sample in config["samples"]]),
         unpack(reads_per_step_input),
     output:
         expand("{qc_dir}/reads_per_step.tsv", **config),
@@ -126,7 +126,7 @@ rule samtools_stats:
     output:
         tsv=expand("{{path}}/{{sample}}.stats.tsv", **config),
     log:
-        expand("{{path}}/{{sample}}_stats.log", **config),
+        expand("{{path}}/{{sample}}.stats.log", **config),
     threads: 4
     conda:
         "envs/samtools.yaml"
@@ -142,7 +142,7 @@ rule samtools_coverage:
     output:
         tsv=expand("{pbmm2_dir}/{{sample}}.coverage.tsv", **config),
     log:
-        expand("{pbmm2_dir}/{{sample}}_samtools_coverage.log", **config),
+        expand("{pbmm2_dir}/{{sample}}.coverage.log", **config),
     conda:
         "envs/samtools.yaml"
     shell:
@@ -156,18 +156,33 @@ rule mt_nuc_ratio_calculator:
     Estimate the amount of nuclear and mitochondrial reads in a sample. 
     """
     input:
-        bam=rules.pbmm2_align.output,
+        bam=rules.pbmm2_align.output.bam,
     output:
         txt=expand("{pbmm2_dir}/{{sample}}.bam.mtnucratio", **config),
         json=expand("{pbmm2_dir}/{{sample}}.bam.mtnucratiomtnuc.json", **config),
+    log:
+        expand("{pbmm2_dir}/{{sample}}.bam.mtnucratio.log", **config),
     params:
         mitochondria=config["mitochondria"],
     conda:
         "envs/mtnucratio.yaml"
     shell:
         """
-        mtnucratio {input.bam} {params.mitochondria}
+        mtnucratio {input.bam} {params.mitochondria} > {log} 2>&1
         """
+
+
+rule multiqc_schema:
+    output:
+        schema=temp(expand("{qc_dir}/multiqc_config.yaml", **config)),
+        # schema=expand("{qc_dir}/multiqc_config.yaml", **config),
+    params:
+        schema=workflow.source_path("schemas/multiqc_config.yaml"),
+        config=config,
+    log:
+        expand("{qc_dir}/multiqc_config.log", **config),
+    script:
+        "scripts/multiqc_schema.py"
 
 
 def qc_files(wildcards):
@@ -177,10 +192,7 @@ def qc_files(wildcards):
         "mtnucratio": [],
     }
     for sample in config["samples"]:
-        files["samtools_stats"].append(f'{config["skera_dir"]}/{sample}.stats.tsv')
-        files["samtools_stats"].append(
-            f'{config["isoseq_dedup_dir"]}/{sample}.stats.tsv'
-        )
+        # files["samtools_stats"].append(f'{config["skera_dir"]}/{sample}.stats.tsv')
         files["samtools_stats"].append(f'{config["pbmm2_dir"]}/{sample}.stats.tsv')
         files["samtools_coverage"].append(
             f'{config["pbmm2_dir"]}/{sample}.coverage.tsv'
@@ -203,16 +215,15 @@ rule multiqc:
         unpack(qc_files),
         # everything in the QC directory
         dir=config["qc_dir"],
+        # misc
+        schema=rules.multiqc_schema.output.schema,
     output:
         report=expand("{qc_dir}/multiqc_report.html", **config),
         data=directory(expand("{qc_dir}/multiqc_report_data", **config)),
     params:
         dir=config["qc_dir"],
-        schema=workflow.source_path("schemas/multiqc_config.yaml"),
     log:
         expand("{qc_dir}/multiqc.log", **config),
-    benchmark:
-        expand("{benchmark_dir}/multiqc.txt", **config)[0]
     conda:
         "envs/multiqc.yaml"
     shell:
@@ -221,11 +232,34 @@ rule multiqc:
         {input} \
         --outdir {params.dir} \
         --filename multiqc_report.html \
-        --config {params.schema} \
+        --config {input.schema} \
         --no-ai \
+        --no-version-check \
         --force \
+        --dirs-depth 1 \
+        --strict \
         --module samtools \
         --module mtnucratio \
         --module custom_content \
         --verbose > {log} 2>&1
+        """
+
+
+rule webshare:
+    """
+    Move files to a webshare directory.
+    """
+    input:
+        report=rules.multiqc.output.report
+    output:
+        report=expand("{www_dir}/multiqc_report.html", **config),
+    log:
+        expand("{qc_dir}/webshare.log", **config),
+    params:
+        dir=config.get("www_dir", "."),
+    shell:
+        """
+        rsync -ar {input.report} {output.report} > {log} 2>&1
+
+        chmod -R 755 {params.dir} >> {log} 2>&1
         """

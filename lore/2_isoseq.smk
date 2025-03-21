@@ -23,6 +23,8 @@ rule isoseq_tag:
     threads: 16
     resources:
         mem_mb=500,
+    conda:
+        "envs/isoseq.yaml"
     shell:
         """
         isoseq tag \
@@ -69,6 +71,8 @@ rule isoseq_refine:
     threads: 16
     resources:
         mem_mb=500,
+    conda:
+        "envs/isoseq.yaml"
     shell:
         """
         isoseq refine \
@@ -113,6 +117,8 @@ rule isoseq_correct:
     threads: 16
     resources:
         mem_mb=30_000,
+    conda:
+        "envs/isoseq.yaml"
     shell:
         """
         isoseq correct \
@@ -147,6 +153,8 @@ rule isoseq_bcstats:
     threads: 16
     resources:
         mem_mb=20_000,
+    conda:
+        "envs/isoseq.yaml"
     shell:
         """
         isoseq bcstats \
@@ -183,6 +191,8 @@ rule isoseq_groupdedup:
     threads: 8
     resources:
         mem_mb=8_000,
+    conda:
+        "envs/isoseq.yaml"
     shell:
         """
         isoseq groupdedup \
@@ -227,6 +237,8 @@ rule isoseq_collapse:
     threads: 8
     resources:
         mem_mb=14_000,
+    conda:
+        "envs/isoseq.yaml"
     shell:
         """
         isoseq collapse \

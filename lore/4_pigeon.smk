@@ -14,6 +14,8 @@ rule pigeon_sort:
     threads: 1
     resources:
         mem_mb=500,
+    conda:
+        "envs/pigeon.yaml"
     shell:
         """
         pigeon sort \
@@ -46,6 +48,8 @@ rule pigeon_prepare:
     threads: 1
     resources:
         mem_mb=500,
+    conda:
+        "envs/pigeon.yaml"
     shell:
         """
         pigeon prepare \
@@ -82,12 +86,12 @@ rule pigeon_classify:
         expand("{benchmark_dir}/pigeon_classify_{{sample}}.txt", **config)[0]
     params:
         outdir=config["pigeon_classify_dir"],
-        # TODO: find the origins of polyA.txt & TSS.bed
-        polya=f"--poly-a {config["poly-a"]}" if "poly-a" in config else "",
-        cage_peak=f"--cage-peak {config["tss_bed"]}" if "tss_bed" in config else "",
+        flags=config["pigeon_classify"],
     threads: 2
     resources:
         mem_mb=8_000,
+    conda:
+        "envs/pigeon.yaml"
     shell:
         """
         pigeon classify \
@@ -95,9 +99,8 @@ rule pigeon_classify:
             --log-level TRACE \
             --num-threads {threads} \
             --out-dir {params.outdir} \
-            {params.polya} \
-            {params.cage_peak} \
             --flnc {input.flcn} \
+            {params.flags} \
             {input.gff} \
             {input.ref_gtf} \
             {input.ref_fasta} > {log} 2>&1
@@ -142,6 +145,8 @@ rule pigeon_filter:
     threads: 1
     resources:
         mem_mb=500,
+    conda:
+        "envs/pigeon.yaml"
     shell:
         """
         pigeon filter \
@@ -179,6 +184,8 @@ rule pigeon_make_seurat:
     threads: 4
     resources:
         mem_mb=12_000,
+    conda:
+        "envs/pigeon.yaml"
     shell:
         """
         pigeon make-seurat \
@@ -214,6 +221,8 @@ rule pigeon_report:
     threads: 1
     resources:
         mem_mb=1_000,
+    conda:
+        "envs/pigeon.yaml"
     shell:
         """
         pigeon report \

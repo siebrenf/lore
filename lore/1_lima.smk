@@ -32,6 +32,8 @@ rule lima:
     threads: 128
     resources:
         mem_mb=3_500,
+    conda:
+        "envs/lima.yaml"
     shell:
         """
         lima \
