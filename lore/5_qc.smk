@@ -1,4 +1,4 @@
-from snakemake.io import expand, directory, unpack
+from snakemake.io import directory, expand, unpack
 
 
 # rule lima_qc_detail:
@@ -152,27 +152,22 @@ rule isoseq_bcstats_qc:
 
 
 rule umi_knee_plot:
+    """
+    Generates a Barcode Rank Plot, the estimated cutoff, and several percentile cutoffs.
+    
+    Sources:
+      - https://isoseq.how/umi/cell-calling.html#cell-calling-documentation
+    """
     input:
-        script=expand("{scripts_dir}/plot_knees.py", **config),
         bcstats=expand("{isoseq_correct_dir}/{{sample}}.bcstats.tsv", **config),
     output:
         knee=expand("{qc_dir}/{{sample}}.knee_mqc.png", **config),
     log:
         expand("{qc_dir}/{{sample}}.knee.log", **config),
     params:
-        dir=config["qc_dir"],
-    shell:
-        """
-        PREFIX={params.dir}/{wildcards.sample}
-        python {input.script} \
-            --tsv {input.bcstats} \
-            --output $PREFIX \
-            --estimate_percentile 95 \
-            > {log} 2>&1
-
-        # rename the file to the required format for MultiQC
-        mv $PREFIX.knee.png $PREFIX.knee_mqc.png
-        """
+        estimate_percentile=config["isoseq_bcstats_percentiles"],
+    script:
+        "scripts/knee_plot.py"
 
 
 rule samtools_stats:

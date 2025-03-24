@@ -37,5 +37,6 @@ lima: "--isoseq --peek-guess"
 isoseq_tag: "--design 16B-10U-13X-T"
 isoseq_refine: "--require-polya"
 isoseq_bcstats: "--molecular"
+isoseq_bcstats_percentiles: 95
 pigeon_classify: ""
 qc_report: True

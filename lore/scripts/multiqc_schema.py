@@ -1,9 +1,8 @@
 import logging
-import os
 import re
 import sys
 import traceback
-from contextlib import redirect_stdout, redirect_stderr
+from contextlib import redirect_stderr, redirect_stdout
 
 
 # snakemake variables
@@ -25,7 +24,6 @@ def handle_exception(exc_type, exc_value, exc_traceback):
     if issubclass(exc_type, KeyboardInterrupt):
         sys.__excepthook__(exc_type, exc_value, exc_traceback)
         return
-
     logger.error(
         "".join(
             [
@@ -40,8 +38,6 @@ sys.excepthook = handle_exception
 
 # capture stdout & stderr
 with open(logfile, "a") as log, redirect_stdout(log), redirect_stderr(log):
-    # shutil.copy(f_in, f_out)
-
     with open(f_in) as cookie_schema:
         cookie = cookie_schema.read()
 

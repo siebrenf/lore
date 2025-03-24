@@ -55,7 +55,7 @@ custom_data:  # https://docs.seqera.io/multiqc/custom_content#section-configurat
   isoseq_correct_stats:
     parent_id: "isoseq_correct"
     parent_name: "Iso-seq correct"
-    parent_description: "Identifies cell barcode errors and corrects them. Additionally, Iso-seq correct estimates which reads are likely to originate from a real cell"
+    parent_description: "Identifies cell barcode errors and corrects them. Additionally, Iso-seq correct estimates which reads are likely to originate from real cells vs ambrient RNA."
     id: "isoseq_correct_stats"
     section_name: "Stats"
     plot_type: "table"
@@ -71,9 +71,10 @@ custom_data:  # https://docs.seqera.io/multiqc/custom_content#section-configurat
     section_name: "Barcode stats"
     plot_type: "table"
   knee_plots:
-    if: "knee_plots"
+    id: "knee_plots"
+    parent_id: "isoseq_correct"
     section_name: "Knee plots"
-    description: "The pink line shows the real cells labeled."
+    description: "The pink line shows the real cells labeled. See [here](https://isoseq.how/umi/cell-calling.html#cell-calling-documentation)."
   isoseq_collapse:
     id: "isoseq_collapse"
     section_name: "Iso-seq collapse"

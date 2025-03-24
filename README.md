@@ -56,9 +56,7 @@ nice snakemake --use-conda --snakefile lore/Snakefile --configfile config.yaml -
     - isoseq correct
       - report [x]
       - bcstats [x]
-      - plots: 
-        - https://isoseq.how/umi/cell-calling.html 
-        - TODO: add sample names
+      - plots [x]
     - pbmm2
       - samtools [x]
     - isoseq collapse [x]
