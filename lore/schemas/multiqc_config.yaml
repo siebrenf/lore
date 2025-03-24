@@ -80,6 +80,48 @@ custom_data:  # https://docs.seqera.io/multiqc/custom_content#section-configurat
     section_name: "Iso-seq collapse"
     plot_type: "table"
     description: "Collapses redundant transcripts into unique isoforms based on exonic structures."
+  pigeon_classify_reports:
+    parent_id: "pigeon_classify"
+    parent_name: "Pigeon Classify"
+    parent_description: "Pigeon is used to classify isoforms into categories, filter this output, and to report on the gene and isoform- level saturation."
+    id: "pigeon_classify_reports"
+    section_name: "Classification (reports)"
+    plot_type: "table"
+  pigeon_classify_classification:
+    parent_id: "pigeon_classify"
+    # parent_name: "Pigeon Classify"
+    # parent_description: "Pigeon is used to classify isoforms into categories, filter this output, and to report on the gene and isoform- level saturation."
+    section_name: "Classification"
+    plot_type: "table"
+  pigeon_classify_classification_by_read:
+    parent_id: "pigeon_classify"
+    section_name: "Classification by read"
+    plot_type: "table"
+  pigeon_classify_classification_by_isoform:
+    parent_id: "pigeon_classify"
+    section_name: "Classification by isoform"
+    plot_type: "table"
+  pigeon_classify_junctions:
+    parent_id: "pigeon_classify"
+    section_name: "Junctions"
+    plot_type: "table"
+  pigeon_classify_genes:
+    parent_id: "pigeon_classify"
+    section_name: "Genes"
+    plot_type: "table"
+  pigeon_classify_rt_switching:
+    parent_id: "pigeon_classify"
+    section_name: "RT Switching"
+    plot_type: "table"
+  pigeon_classify_filter_reasons:
+    parent_id: "pigeon_classify"
+    section_name: "Filter reasons"
+    plot_type: "table"
+  pigeon_report:
+    parent_id: "pigeon_classify"
+    id: "pigeon_report"
+    section_name: "Saturation reports"
+    plot_type: "table"
 
 sp:
   reads_per_step:
@@ -98,6 +140,24 @@ sp:
     fn: "*.knee_mqc.png"
   isoseq_collapse:
     fn: "isoseq_collapse.tsv"
+  pigeon_classify_reports:
+    fn: "pigeon_classify_reports.tsv"
+  pigeon_classify_classification:
+    fn: "pigeon_classify_classifications.tsv"
+  pigeon_classify_classification_by_read:
+    fn: "pigeon_classify_classifications_by_read.tsv"
+  pigeon_classify_classification_by_isoform:
+    fn: "pigeon_classify_classifications_by_isoform.tsv"
+  pigeon_classify_junctions:
+    fn: "pigeon_classify_junctions.tsv"
+  pigeon_classify_genes:
+    fn: "pigeon_classify_genes.tsv"
+  pigeon_classify_rt_switching:
+    fn: "pigeon_classify_rt_switching.tsv"
+  pigeon_classify_filter_reasons:
+    fn: "pigeon_classify_filter_reasons.tsv"
+  pigeon_report:
+    fn: "*_saturation.txt"
 ignore_images: false
 
 table_columns_visible:

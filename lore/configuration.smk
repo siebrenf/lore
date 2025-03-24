@@ -25,7 +25,7 @@ for directory in [
     "isoseq_dedup_dir",  # 2-DeduplicatedReads/
     "isoseq_collapse_dir",
     "pbmm2_dir",
-    "pigeon_sort_dir",
+    # "pigeon_sort_dir",
     "pigeon_classify_dir",  # 3-CollapsedTranscripts/
     # "pigeon_filter_dir",
     "pigeon_report_dir",

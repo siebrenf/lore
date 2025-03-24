@@ -39,4 +39,7 @@ isoseq_refine: "--require-polya"
 isoseq_bcstats: "--molecular"
 isoseq_bcstats_percentiles: 95
 pigeon_classify: ""
-qc_report: True
+
+# Optional outputs
+bigwigs: True
+qc_report: True  # recommended

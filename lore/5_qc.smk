@@ -234,6 +234,44 @@ rule isoseq_collapse_qc:
         "scripts/isoseq_collapse.py"
 
 
+rule pigeon_classify_reports_qc:
+    input:
+        raw=[
+            f'{config["pigeon_classify_dir"]}/{sample}.report.json'
+            for sample in config["samples"]
+        ],
+        filtered=[
+            f'{config["pigeon_classify_dir"]}/{sample}_classification.filtered.report.json'
+            for sample in config["samples"]
+        ],
+    output:
+        stats=expand("{qc_dir}/pigeon_classify_reports.tsv", **config),
+    script:
+        "scripts/pigeon_classify_reports.py"
+
+
+rule pigeon_classify_summaries_qc:
+    input:
+        raw=[
+            f'{config["pigeon_classify_dir"]}/{sample}.summary.txt'
+            for sample in config["samples"]
+        ],
+        filtered=[
+            f'{config["pigeon_classify_dir"]}/{sample}_classification.filtered.summary.txt'
+            for sample in config["samples"]
+        ],
+    output:
+        expand("{qc_dir}/pigeon_classify_classifications_by_read.tsv", **config),
+        expand("{qc_dir}/pigeon_classify_classifications.tsv", **config),
+        expand("{qc_dir}/pigeon_classify_rt_switching.tsv", **config),
+        expand("{qc_dir}/pigeon_classify_genes.tsv", **config),
+        expand("{qc_dir}/pigeon_classify_filter_reasons.tsv", **config),
+        expand("{qc_dir}/pigeon_classify_classifications_by_isoform.tsv", **config),
+        expand("{qc_dir}/pigeon_classify_junctions.tsv", **config),
+    script:
+        "scripts/pigeon_classify_summaries.py"
+
+
 rule multiqc_schema:
     """
     Expand and evaluate any f-strings inside the config schema.
@@ -255,6 +293,7 @@ def qc_files(wildcards):
         "samtools_stats": [],
         "samtools_coverage": [],
         "mtnucratio": [],
+        "pigeon_report": [],
     }
     for sample in config["samples"]:
         files["knees"].append(f'{config["qc_dir"]}/{sample}.knee_mqc.png')
@@ -264,6 +303,9 @@ def qc_files(wildcards):
         )
         files["mtnucratio"].append(
             f'{config["pbmm2_dir"]}/{sample}.bam.mtnucratiomtnuc.json'
+        )
+        files["pigeon_report"].append(
+            f'{config["pigeon_report_dir"]}/{sample}_saturation.txt'
         )
     return files
 
@@ -280,6 +322,8 @@ rule multiqc:
         rules.isoseq_correct_qc.output,
         rules.isoseq_bcstats_qc.output,
         rules.isoseq_collapse_qc.output,
+        rules.pigeon_classify_reports_qc.output,
+        rules.pigeon_classify_summaries_qc.output,
         # per-sample files
         unpack(qc_files),
         # everything in the QC directory

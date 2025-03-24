@@ -7,9 +7,9 @@ rule pigeon_sort:
     input:
         gff=rules.isoseq_collapse.output.gff,
     output:
-        gff=expand("{pigeon_sort_dir}/{{sample}}.gff", **config),
+        gff=expand("{isoseq_collapse_dir}/{{sample}}.gff", **config),
     log:
-        expand("{pigeon_sort_dir}/{{sample}}.log", **config),
+        expand("{isoseq_collapse_dir}/{{sample}}_pigeon_sort.log", **config),
     benchmark:
         expand("{benchmark_dir}/pigeon_sort_{{sample}}.txt", **config)[0]
     threads: 1
@@ -111,6 +111,7 @@ rule pigeon_classify:
 rule pigeon_filter:
     """
     Filter isoforms from the classification output.
+    Also generates a filtered GFF.
 
     Sources:
       - https://isoseq.how/classification/workflow.html#filter-isoforms
@@ -139,10 +140,14 @@ rule pigeon_filter:
             "{pigeon_classify_dir}/{{sample}}_classification.filtered_lite_reasons.txt",
             **config,
         ),
+        gff=expand("{isoseq_collapse_dir}/{{sample}}.filtered_lite.gff", **config),
+        # gff=expand("{pigeon_classify_dir}/{{sample}}.filtered_lite.gff", **config),
     log:
         expand("{pigeon_classify_dir}/{{sample}}_filter.log", **config),
     benchmark:
         expand("{benchmark_dir}/pigeon_filter_{{sample}}.txt", **config)[0]
+    # params:
+    #     gff=expand("{isoseq_collapse_dir}/{{sample}}.filtered_lite.gff", **config),
     threads: 1
     resources:
         mem_mb=500,
@@ -156,6 +161,8 @@ rule pigeon_filter:
             --num-threads {threads} \
             --isoforms {input.gff} \
             {input.classification} > {log} 2>&1
+
+        # mv {params.gff} {output.gff}
         """
 
 

@@ -15,15 +15,12 @@ include: "6_deeptools.smk"
 rule all:
     input:
         # bigwigs
-        [f'{config["pbmm2_dir"]}/{sample}.bw' for sample in config["samples"]],
+        [f'{config["pbmm2_dir"]}/{sample}.bw' for sample in config["samples"]] 
+        if config.get("bigwigs", True)
+        else [],
         # seurat/scanpy
         [
             f'{config["seurat_dir"]}/{sample}/{sample}.info.csv'
-            for sample in config["samples"]
-        ],
-        # pigeon
-        [
-            f'{config["pigeon_report_dir"]}/{sample}_saturation.txt'
             for sample in config["samples"]
         ],
         # QC report

@@ -219,7 +219,6 @@ rule isoseq_collapse:
         abundance=expand(
             "{isoseq_collapse_dir}/{{sample}}.unsorted.abundance.txt", **config
         ),
-        # unrequested files:
         fasta=expand("{isoseq_collapse_dir}/{{sample}}.unsorted.fasta", **config),
         fastq=expand("{isoseq_collapse_dir}/{{sample}}.unsorted.fastq", **config),
         flnc_count=expand(
