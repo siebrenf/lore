@@ -12,3 +12,4 @@ dependencies:
   - conda-forge::black
   - conda-forge::isort
   - bioconda::snakefmt
+  - conda-forge::graphviz

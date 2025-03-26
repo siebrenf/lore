@@ -217,7 +217,8 @@ rule isoseq_collapse:
       - https://isoseq.how/classification/workflow.html#collapse-into-unique-isoforms
     """
     input:
-        bam=expand("{pbmm2_dir}/{{sample}}.bam", **config),  # bam=rules.pbmm2_align.output.bam,
+        # cannot reference rules.pbmm2_align due to smk import order
+        bam=expand("{pbmm2_dir}/{{sample}}.bam", **config),
     output:
         gff=expand("{isoseq_collapse_dir}/{{sample}}.unsorted.gff", **config),
         abundance=expand(
@@ -250,5 +251,5 @@ rule isoseq_collapse:
             --num-threads {threads} \
             {input.bam} \
             {output.gff} \
-            --verbose > {log} 2>&1
+            > {log} 2>&1
         """

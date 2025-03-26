@@ -41,11 +41,11 @@ lima: "--isoseq --peek-guess"
 #    - https://isoseq.how/umi/cli-workflow.html#step-3---tag
 #    - https://kb.10xgenomics.com/hc/en-us/articles/360001493051-What-is-a-template-switch-oligo-TSO
 isoseq_tag: "--design 16B-10U-13X-T"
-isoseq_refine: "--require-polya"
+isoseq_refine: ""  # --require-polya
 isoseq_bcstats: "--molecular"
 isoseq_bcstats_percentiles: 95
 pigeon_classify: ""
 
 # Optional outputs
-bigwigs: True
+bigwigs: False  # test sample does not map
 qc_report: True  # recommended
