@@ -9,4 +9,6 @@ dependencies:
   - conda-forge::conda-ecosystem-user-package-isolation=1.0
 
   # dev
-  - snakefmt
+  - conda-forge::black
+  - conda-forge::isort
+  - bioconda::snakefmt

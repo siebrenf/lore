@@ -1,4 +1,4 @@
-from snakemake.io import directory, expand, unpack
+from snakemake.io import directory, expand, unpack, temp
 
 
 # rule lima_qc_detail:
@@ -12,7 +12,6 @@ from snakemake.io import directory, expand, unpack
 #         script=rules.qc_scripts.output.detail,
 #         report=rules.lima.output.report,
 #     output:
-#         # TODO: add other output here
 #         expand("{qc_dir}/{{sample}}/detail_yield_zmw.png", **config),
 #     params:
 #         outdir=config["qc_dir"],
@@ -166,6 +165,8 @@ rule umi_knee_plot:
         expand("{qc_dir}/{{sample}}.knee.log", **config),
     params:
         estimate_percentile=config["isoseq_bcstats_percentiles"],
+    conda:
+        "envs/matplotlib.yaml"
     script:
         "scripts/knee_plot.py"
 
@@ -234,30 +235,38 @@ rule isoseq_collapse_qc:
         "scripts/isoseq_collapse.py"
 
 
-rule pigeon_classify_reports_qc:
-    input:
-        raw=[
-            f'{config["pigeon_classify_dir"]}/{sample}.report.json'
-            for sample in config["samples"]
-        ],
-        filtered=[
-            f'{config["pigeon_classify_dir"]}/{sample}_classification.filtered.report.json'
-            for sample in config["samples"]
-        ],
-    output:
-        stats=expand("{qc_dir}/pigeon_classify_reports.tsv", **config),
-    script:
-        "scripts/pigeon_classify_reports.py"
+# rule pigeon_classify_reports_qc:
+#     input:
+#         raw=[
+#             f'{config["pigeon_classify_dir"]}/{sample}.report.json'
+#             for sample in config["samples"]
+#         ],
+#         filtered=[
+#             f'{config["pigeon_classify_dir"]}/{sample}_classification.filtered.report.json'
+#             for sample in config["samples"]
+#         ],
+#     output:
+#         stats=expand("{qc_dir}/pigeon_classify_reports.tsv", **config),
+#     script:
+#         "scripts/pigeon_classify_reports.py"
 
 
-rule pigeon_classify_summaries_qc:
+rule pigeon_classify_qc:
     input:
-        raw=[
+        raw_summary=[
             f'{config["pigeon_classify_dir"]}/{sample}.summary.txt'
             for sample in config["samples"]
         ],
-        filtered=[
+        filtered_summary=[
             f'{config["pigeon_classify_dir"]}/{sample}_classification.filtered.summary.txt'
+            for sample in config["samples"]
+        ],
+        raw_report=[
+            f'{config["pigeon_classify_dir"]}/{sample}.report.json'
+            for sample in config["samples"]
+        ],
+        filtered_report=[
+            f'{config["pigeon_classify_dir"]}/{sample}_classification.filtered.report.json'
             for sample in config["samples"]
         ],
     output:
@@ -266,10 +275,44 @@ rule pigeon_classify_summaries_qc:
         expand("{qc_dir}/pigeon_classify_rt_switching.tsv", **config),
         expand("{qc_dir}/pigeon_classify_genes.tsv", **config),
         expand("{qc_dir}/pigeon_classify_filter_reasons.tsv", **config),
+        expand("{qc_dir}/pigeon_classify_classifications_by_cell.tsv", **config),
+        expand("{qc_dir}/pigeon_classify_classifications_by_transcript.tsv", **config),
         expand("{qc_dir}/pigeon_classify_classifications_by_isoform.tsv", **config),
+        expand("{qc_dir}/pigeon_classify_classifications_by_mapping.tsv", **config),
         expand("{qc_dir}/pigeon_classify_junctions.tsv", **config),
     script:
-        "scripts/pigeon_classify_summaries.py"
+        "scripts/pigeon_classify.py"
+
+
+rule pigeon_report_qc:
+    """
+    Aggregate custom columns for the general stats table
+    """
+    input:
+        [
+            f'{config["pigeon_report_dir"]}/{sample}_saturation.txt'
+            for sample in config["samples"]
+        ],
+    output:
+        expand("{qc_dir}/pigeon_report.tsv", **config),
+    conda:
+        "envs/matplotlib.yaml"
+    script:
+        "scripts/pigeon_report.py"
+
+
+rule general_stats_qc:
+    """
+    Aggregate custom columns for the general stats table
+    """
+    input:
+        isoseq_correct_stats=rules.isoseq_correct_qc.output.stats,
+    output:
+        stats=expand("{qc_dir}/general_stats.tsv", **config),
+    conda:
+        "envs/matplotlib.yaml"
+    script:
+        "scripts/general_stats.py"
 
 
 rule multiqc_schema:
@@ -293,7 +336,7 @@ def qc_files(wildcards):
         "samtools_stats": [],
         "samtools_coverage": [],
         "mtnucratio": [],
-        "pigeon_report": [],
+        # "pigeon_report": [],
     }
     for sample in config["samples"]:
         files["knees"].append(f'{config["qc_dir"]}/{sample}.knee_mqc.png')
@@ -304,9 +347,9 @@ def qc_files(wildcards):
         files["mtnucratio"].append(
             f'{config["pbmm2_dir"]}/{sample}.bam.mtnucratiomtnuc.json'
         )
-        files["pigeon_report"].append(
-            f'{config["pigeon_report_dir"]}/{sample}_saturation.txt'
-        )
+        # files["pigeon_report"].append(
+        #     f'{config["pigeon_report_dir"]}/{sample}_saturation.txt'
+        # )
     return files
 
 
@@ -316,20 +359,19 @@ rule multiqc:
     """
     input:
         # aggregated files
+        rules.general_stats_qc.output,
         rules.reads_per_step_qc.output,
         rules.skera_qc.output,
         rules.lima_qc.output,
         rules.isoseq_correct_qc.output,
         rules.isoseq_bcstats_qc.output,
         rules.isoseq_collapse_qc.output,
-        rules.pigeon_classify_reports_qc.output,
-        rules.pigeon_classify_summaries_qc.output,
+        rules.pigeon_classify_qc.output,
+        rules.pigeon_report_qc.output,
         # per-sample files
         unpack(qc_files),
         # everything in the QC directory
         dir=config["qc_dir"],
-        # # misc
-        # schema=rules.multiqc_schema.output.schema,
     output:
         report=expand("{qc_dir}/multiqc_report.html", **config),
         data=directory(expand("{qc_dir}/multiqc_report_data", **config)),
@@ -360,21 +402,32 @@ rule multiqc:
         """
 
 
+def get_file(wildcards):
+    if wildcards.file.endswith(".html"):
+        return f'{config["qc_dir"]}/{wildcards.file}'
+    elif wildcards.file.endswith(".bw"):
+        return f'{config["pbmm2_dir"]}/{wildcards.file}'
+    else:
+        raise ValueError
+
+
 rule webshare:
     """
     Copy the input to a webshare directory, and make it readable.
     """
     input:
-        report=rules.multiqc.output.report,
+        file=get_file,
     output:
-        report=expand("{www_dir}/multiqc_report.html", **config),
-    log:
-        expand("{qc_dir}/webshare.log", **config),
+        file=expand("{www_dir}/{{file}}", **config),
     params:
         dir=config.get("www_dir", "."),
+    resources:
+        parallel_downloads=1,
     shell:
         """
-        rsync -ar {input.report} {output.report} > {log} 2>&1
+        sleep 1  # fixes clock skew problem: https://github.com/snakemake/snakemake/issues/3261
+        
+        rsync -a {input} {output}
 
-        chmod -R 755 {params.dir} >> {log} 2>&1
+        chmod -R 755 {params.dir}
         """

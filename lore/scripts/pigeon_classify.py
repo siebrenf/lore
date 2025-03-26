@@ -61,12 +61,35 @@ data = {
         "RT switching": [],
         "Low coverage/non-canonical": [],
     },
+    "Classifications, by cell": {
+        "Sample": [],
+        "median_genes_per_cell": [],
+        "median_transcripts_per_cell": [],
+        "median_genes_per_cell_known": [],
+        "median_transcripts_per_cell_known": [],
+    },
+    "Classifications, by mapping": {
+        "Sample": [],
+        "flnc_mapped_genome": [],
+        "flnc_mapped_transcriptome": [],
+        "flnc_mapped_transcriptome_excluding_ribomito": [],
+    },
+    "Classifications, by transcript": {
+        "Sample": [],
+        "transcripts_fsm": [],
+        "transcripts_ism": [],
+        "transcripts_nic": [],
+        "transcripts_nnc": [],
+    },
 }
-for n in range(len(snakemake.input.raw)):
+for n in range(len(snakemake.input.raw_summary)):
     for fname in [
-        snakemake.input.raw[n],  # f'{config["pigeon_classify_dir"]}/{sample}.summary.txt'
-        snakemake.input.raw[n].replace(".summary.txt", "_classification.filtered.summary.txt")
+        snakemake.input.raw_summary[n],  # f'{config["pigeon_classify_dir"]}/{sample}.summary.txt'
+        snakemake.input.raw_summary[n].replace(".summary.txt", "_classification.filtered.summary.txt")
     ]:
+        # Collect data from the summary.txt files.
+        # The raw and filtered files are slightly different,
+        #  which we correct for first
         if fname.endswith("_classification.filtered.summary.txt"):
             sample = os.path.basename(fname).rsplit("_classification.filtered.summary.txt", 1)[0]
             sample += " (filtered)"
@@ -84,7 +107,7 @@ for n in range(len(snakemake.input.raw)):
                     data["Filter reasons"][key].append(sample)
                 else:
                     data["Filter reasons"][key].append(str(None))
-        
+
         subsection = "Classifications"
         data[subsection]["Sample"].append(sample)
         with open(fname) as f2:  
@@ -117,6 +140,47 @@ for n in range(len(snakemake.input.raw)):
                         key = "Input"
                     value = value.strip().split(" ")[0]  # strip suffix: " (x.xx%)"
                     data[subsection][key].append(value)
+
+        # Collect data from the report.json files
+        # The raw and filtered files are the same (yay)
+        fname = fname.replace(".summary.txt", ".report.json")
+        with open(fname) as f2:
+            contents = json.load(f2)
+        for dct in contents["attributes"]:
+            key = dct["id"]
+            if key in [
+                "median_genes_per_cell",
+                "median_transcripts_per_cell",
+                "median_genes_per_cell_known",
+                "median_transcripts_per_cell_known",
+            ]:
+                subsection = "Classifications, by cell"
+                value = f'{dct["value"]:.2f}'
+                data[subsection][key].append(value)
+                if key == "median_genes_per_cell":
+                    data[subsection]["Sample"].append(sample)
+            elif key in [
+                "flnc_mapped_genome",
+                "flnc_mapped_transcriptome",
+                "flnc_mapped_transcriptome_excluding_ribomito",
+            ]:
+                subsection = "Classifications, by mapping"
+                value = f'{dct["value"]:.2f}'
+                data[subsection][key].append(value)
+                if key == "flnc_mapped_genome":
+                    data[subsection]["Sample"].append(sample)
+            elif key in [
+                "transcripts_fsm",
+                "transcripts_ism",
+                "transcripts_nic",
+                "transcripts_nnc",
+            ]:
+                subsection = "Classifications, by transcript"
+                value = f'{dct["value"]:.2f}'
+                data[subsection][key].append(value)
+                if key == "transcripts_fsm":
+                    data[subsection]["Sample"].append(sample)
+
 
 # print(json.dumps(data, indent=4))
 for subsection in data:

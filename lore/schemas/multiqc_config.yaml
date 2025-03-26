@@ -1,10 +1,12 @@
-# module_order:
-#   - reads_per_step
-#   - skera
-#   - lima
-#   - isoseq_correct
-#   - samtools
-#   - isoseq_collapse
+#module_order:
+#  - reads_per_step
+#  - skera
+#  - lima
+#  - isoseq_correct
+#  - samtools
+#  - isoseq_collapse
+#  - pigeon_classify
+#  - pigeon_report
 
 report_section_order:
   reads_per_step:
@@ -15,43 +17,86 @@ report_section_order:
     order: 998
   isoseq_correct:
     order: 997
-  knee_plots:
-    order: 997
   samtools:
     order: 996
   isoseq_collapse:
     order: 995
+  pigeon_classify:
+    order: 994
+  pigeon_report:
+    order: 993
 
 custom_data:  # https://docs.seqera.io/multiqc/custom_content#section-configuration
+  general_stats:
+    plot_type: "generalstats"  # generalstats | table | bargraph | linegraph | boxplot | scatter | heatmap | violin
+    headers:
+      m_reads:
+        title: "Reads in cells"
+        description: "Number of barcoded, full-length non-concatemer reads in cells (Millions)"
+        suffix: "M"
+        hidden: True
+        scale: "YlGn"  # https://docs.seqera.io/multiqc/development/plots#table-colour-scales
+      "%_reads":
+        title: "% Reads in cells"
+        description: "Percentage of barcoded, full-length non-concatemer reads in cells"
+        suffix: "%"
+        scale: "Purples"
   reads_per_step:
     id: "reads_per_step"
     section_name: "Reads per processing step"
-    description: "The number of reads found after each processing step. 
-    1: Circular consensus sequencing (HiFi) reads. 
-    2: Segmented reads. 
-    3: Primed reads.
-    5: Non-Chimeric reads. 
-    6: PolyA-tailed reads. 
-    7: Barcoded reads.
-    8: Final reads."
-    plot_type: "linegraph"  # generalstats | table | bargraph | linegraph | boxplot | scatter | heatmap | violin
+    description: "
+    The number of reads remaining after each processing step. 
+    The final reads are deduplicated and aligned to the genome/transcriptome.
+    <br>
+    <br><b>Legend:</b>
+    <br>ccs_reads:    Circular consensus sequencing (HiFi) reads (Skera) 
+    <br>s_reads:      Segmented reads (Skera)
+    <br>primed_reads: Primed reads (Lima)
+    <br>fl_reads:     Full Length reads (Iso-seq correct)
+    <br>flnc_reads:   Full Length Non-Chimeric reads (Iso-seq correct)
+    <br>polya_reads:  PolyA-tailed reads (Iso-seq correct)
+    <br>non-missing:  Barcoded reads (Iso-seq correct)
+    <br>yield_reads:  Estimated reads in cells (Iso-seq correct)
+    "
+    plot_type: "linegraph"
     pconfig:
       logswitch: True
       logswitch_active: True
       logswitch_label: "Log10"
       ylab: "number of reads"
       xlab: "processing step"
-      categories: True
+      # categories: True
   skera:
     id: "skera"
     section_name: "Skera"
     description: "Deconcatenates Kinnex HiFi reads to produce S-reads that represent the original cDNA molecules."
     plot_type: "table"
+    headers:
+      reads:
+        # title: "Reads"
+        description: "Reads"
+        # scale: ""
+      s_reads:
+        description: "Segmented Reads (S-Reads)"
+        scale: "RdPu"
+      mean_len_s_reads:
+        description: "Mean Length of S-Reads"
+        scale: "YlGn"
+      percent_full_array:
+        description: "Percentage of Reads with Full Array"
+        # scale: ""
+      mean_array_size:
+        description: "Mean Array Size (Concatenation Factor)"
+        scale: "RdPu"
   lima:
     id: "lima"
     section_name: "Lima"
     description: "Removes and spurious false positives."
     plot_type: "table"
+#    headers:
+#      "Reads input":
+#        description: "test"
+#        scale: "RdPu"
   isoseq_correct_stats:
     parent_id: "isoseq_correct"
     parent_name: "Iso-seq correct"
@@ -70,6 +115,37 @@ custom_data:  # https://docs.seqera.io/multiqc/custom_content#section-configurat
     parent_id: "isoseq_correct"
     section_name: "Barcode stats"
     plot_type: "table"
+    headers:
+      number_unique_groupbarcodes:
+        description: "Number of Unique Cell/Group Barcodes"
+        # scale: ""
+      number_unique_molbarcodes:
+        description: "Number of UMIs"
+        scale: "RdPu"
+      total_number_reads:
+        description: "Number of Reads"
+        scale: "YlGn"
+      mean_groupbarcode_depth:
+        description: "Mean Group Barcode Depth"
+        # scale: ""
+      cutoff_threshold:
+        description: "Frequency Cutoff"
+        scale: "RdPu"
+      number_of_cells:
+        description: "Number of Cells"
+        scale: "YlGn"
+      median_umis_per_cell:
+        description: "Median UMIs Per Cell"
+        # scale: ""
+      reads_in_cells:
+        description: "Total Number of Reads in Cells"
+        scale: "RdPu"
+      fraction_reads_in_cells:
+        description: "Fraction Reads In Cells"
+        scale: "YlGn"
+      mean_reads_per_cell:
+        description: "Mean Reads per Cell"
+        # scale: ""
   knee_plots:
     id: "knee_plots"
     parent_id: "isoseq_correct"
@@ -80,26 +156,43 @@ custom_data:  # https://docs.seqera.io/multiqc/custom_content#section-configurat
     section_name: "Iso-seq collapse"
     plot_type: "table"
     description: "Collapses redundant transcripts into unique isoforms based on exonic structures."
-  pigeon_classify_reports:
+  pigeon_classify_classification:
     parent_id: "pigeon_classify"
     parent_name: "Pigeon Classify"
     parent_description: "Pigeon is used to classify isoforms into categories, filter this output, and to report on the gene and isoform- level saturation."
-    id: "pigeon_classify_reports"
-    section_name: "Classification (reports)"
-    plot_type: "table"
-  pigeon_classify_classification:
-    parent_id: "pigeon_classify"
-    # parent_name: "Pigeon Classify"
-    # parent_description: "Pigeon is used to classify isoforms into categories, filter this output, and to report on the gene and isoform- level saturation."
-    section_name: "Classification"
+    section_name: "Classifications overview"
     plot_type: "table"
   pigeon_classify_classification_by_read:
     parent_id: "pigeon_classify"
-    section_name: "Classification by read"
+    section_name: "Classifications by read"
     plot_type: "table"
   pigeon_classify_classification_by_isoform:
     parent_id: "pigeon_classify"
-    section_name: "Classification by isoform"
+    section_name: "Classifications by isoform"
+    plot_type: "table"
+  pigeon_classify_classification_by_cell:
+    parent_id: "pigeon_classify"
+    section_name: "Classifications by cell"
+    plot_type: "table"
+  pigeon_classify_classification_by_transcript:
+    parent_id: "pigeon_classify"
+    section_name: "Classifications by transcript"
+    plot_type: "table"
+    headers:
+      transcripts_fsm:
+        description: "Transcripts classified as Full-splice Matches (FSM)"
+        scale: "RdPu"
+      transcripts_ism:
+        description: "Transcripts classified as Incomplete-splice Matches (ISM)"
+      transcripts_nic:
+        description: "Transcripts classified as Novel In Catalog (NIC)"
+        scale: "YlGn"
+      transcripts_nnc:
+        description: "Transcripts classified as Novel Not In Catalog (NNC)"
+        # scale: "RdPu"
+  pigeon_classify_classification_by_mapping:
+    parent_id: "pigeon_classify"
+    section_name: "Classifications by mapping"
     plot_type: "table"
   pigeon_classify_junctions:
     parent_id: "pigeon_classify"
@@ -118,12 +211,17 @@ custom_data:  # https://docs.seqera.io/multiqc/custom_content#section-configurat
     section_name: "Filter reasons"
     plot_type: "table"
   pigeon_report:
-    parent_id: "pigeon_classify"
-    id: "pigeon_report"
     section_name: "Saturation reports"
-    plot_type: "table"
+    plot_type: "linegraph | table"
+    description: "Gene and isoform- level saturation. The tables show the number of unique genes found in a subsampled number of reads."
+    pconfig:
+      ylab: "unique known/unknown genes/isoforms"
+      xlab: "number of subsampled reads"
+      categories: True
 
 sp:
+  general_stats:
+    fn: "general_stats.tsv"
   reads_per_step:
     fn: "reads_per_step.tsv"
   skera:
@@ -146,8 +244,14 @@ sp:
     fn: "pigeon_classify_classifications.tsv"
   pigeon_classify_classification_by_read:
     fn: "pigeon_classify_classifications_by_read.tsv"
+  pigeon_classify_classification_by_cell:
+    fn: "pigeon_classify_classifications_by_cell.tsv"
+  pigeon_classify_classification_by_transcript:
+    fn: "pigeon_classify_classifications_by_transcript.tsv"
   pigeon_classify_classification_by_isoform:
     fn: "pigeon_classify_classifications_by_isoform.tsv"
+  pigeon_classify_classification_by_mapping:
+    fn: "pigeon_classify_classifications_by_mapping.tsv"
   pigeon_classify_junctions:
     fn: "pigeon_classify_junctions.tsv"
   pigeon_classify_genes:
@@ -157,11 +261,13 @@ sp:
   pigeon_classify_filter_reasons:
     fn: "pigeon_classify_filter_reasons.tsv"
   pigeon_report:
-    fn: "*_saturation.txt"
+    # fn: "*_saturation.txt"
+    fn: "pigeon_report.tsv"
 ignore_images: false
 
 table_columns_visible:
   "Samtools: stats":
+    # Filter group columns from the general stats table
     error_rate: True
     non-primary_alignments: False
     reads_mapped: False
@@ -170,6 +276,21 @@ table_columns_visible:
     reads_MQ0_percent: True
     raw_total_sequences: True
     insert_size_average: False
+  samtools-stats-dp:
+    # Filter columns in samtools stats "Alignment stats" plot/table
+    raw_total_sequences: True
+    reads_mapped_and_paired: False
+    reads_properly_paired: False
+    reads_duplicated: False
+    reads_QC_failed: False
+    reads_MQ0: True
+    bases_mapped__cigar: True
+    bases_trimmed: False
+    bases_duplicated: False
+    pairs_on_different_chromosomes: False
+    pairs_with_other_orientation: False
+    inward_oriented_pairs: False
+    outward_oriented_pairs: False
 
 samtools_coverage:
   # tips: https://docs.seqera.io/multiqc/modules/samtools#coverage

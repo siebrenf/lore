@@ -174,6 +174,10 @@ rule isoseq_groupdedup:
     Performs PCR deduplication via clustering by UMI and cell barcodes (if available).
     Generates one consensus sequence per founder molecule, using a QV guided consensus.
 
+    If the rc tag added by correct is present in the input, 
+    groupdedup and dedup will filter the output to only include real cells. 
+    This can be turned off using ` –keep-non-real-cells`.
+
     Sources:
       - https://isoseq.how/umi/cli-workflow.html#step-6---deduplication
       - https://isoseq.how/umi/dedup-faq.html

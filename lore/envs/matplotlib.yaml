@@ -1,0 +1,8 @@
+name: matplotlib
+channels:
+  - conda-forge
+dependencies:
+  - conda-forge::matplotlib-base
+  - conda-forge::numpy
+  - conda-forge::pandas
+  - conda-forge::conda-ecosystem-user-package-isolation=1.0

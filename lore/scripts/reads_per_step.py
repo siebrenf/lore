@@ -7,7 +7,7 @@ with open(snakemake.output[0], "w") as f1:  # f'{config["qc_dir"]}/reads_per_ste
     for n in range(len(snakemake.input.skera)):
         sample = os.path.basename(snakemake.input.skera[n]).rsplit(".", 2)[0]
         data = {
-            "sample": sample,
+            "": sample,
             # skera (deconcatenate reads)
             "ccs_reads": None,
             "s_reads": None,
@@ -16,7 +16,7 @@ with open(snakemake.output[0], "w") as f1:  # f'{config["qc_dir"]}/reads_per_ste
             # refine (reads)
             "fl_reads": None,
             "flnc_reads": None,
-            "poly_reads": None,
+            "polya_reads": None,
             # correct (barcodes)
             "non-missing_reads": None,
             "yield_reads": None,
@@ -61,7 +61,7 @@ with open(snakemake.output[0], "w") as f1:  # f'{config["qc_dir"]}/reads_per_ste
             elif key == "num_reads_flnc":
                 data["flnc_reads"] = value
             elif key == "num_reads_flnc_polya":
-                data["poly_reads"] = value
+                data["polya_reads"] = value
 
         f_correct = snakemake.input.correct[
             n

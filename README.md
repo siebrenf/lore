@@ -8,7 +8,7 @@
 </details>
 
 ## MAS-Seq workflow
-<details>s
+<details>
 <summary>Expand</summary>
 
 ![broken image](imgs/workflow.png)
@@ -49,30 +49,9 @@ nice snakemake --use-conda --snakefile lore/Snakefile --configfile config.yaml -
       - https://doi.org/10.1186/s12864-021-08117-9
       - https://github.com/kacst-bioinfo-lab/TE_ideintification_pipeline  # nice workflow figure
   
-  - MultiQC report containing:
-    - skera [x]
-    - lima [x]
-    - isoseq refine [x]
-    - isoseq correct
-      - report [x]
-      - bcstats [x]
-      - plots [x]
-    - pbmm2
-      - samtools [x]
-    - isoseq collapse [x]
-    - pigeon classify
-      - summary
-      - filtered summary
-      - report
-      - report summary
-    - pigeon report
-      - saturation
-  
   - what to do with pbmm2 unmapped reads:
     - second pass to the alignment stage to specifically map repeat elements?
     - omit?
-  - Optionally merge SMRT cells:
-    https://isoseq.how/umi/cli-workflow.html#step-4b---merge-smrt-cells
   - integrate genomepy to:
     - get a genome
     - create the minimap2 index

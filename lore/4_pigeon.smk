@@ -161,9 +161,7 @@ rule pigeon_filter:
             --num-threads {threads} \
             --isoforms {input.gff} \
             {input.classification} > {log} 2>&1
-
-        # mv {params.gff} {output.gff}
-        """
+        """  # mv {params.gff} {output.gff}
 
 
 rule pigeon_make_seurat:

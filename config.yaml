@@ -1,14 +1,18 @@
 results_dir:
-  /scratch/siebrenf/lore3
+  # /scratch/siebrenf/lore3
+  /bank/experiments/2025-03-lore
 www_dir:
-  /vol/mbdata/siebrenf/lore
+  # /vol/mbdata/siebrenf/lore
+  /mnt/cn/vol/mbdata/siebrenf/lore
 samples:
   - segmented
 
 genome_fasta:
-  /scratch/siebrenf/lore/GRCh38/GRCh38.fa
+  # /scratch/siebrenf/lore/GRCh38/GRCh38.fa
+  /bank/genomes/GRCh38/GRCh38.fa
 gene_annotation_gtf:
-  /scratch/siebrenf/lore/GRCh38/GRCh38.annotation.gtf
+  # /scratch/siebrenf/lore/GRCh38/GRCh38.annotation.gtf
+  /bank/genomes/GRCh38/GRCh38.annotation.gtf
 mitochondria: "chrM"
 
 adapters:
