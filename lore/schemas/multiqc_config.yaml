@@ -65,7 +65,7 @@ custom_data:  # https://docs.seqera.io/multiqc/custom_content#section-configurat
       logswitch_label: "Log10"
       ylab: "number of reads"
       xlab: "processing step"
-      # categories: True
+      categories: True
   skera:
     id: "skera"
     section_name: "Skera"
