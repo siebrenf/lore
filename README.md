@@ -16,7 +16,7 @@
 </details>
 
 
-## Underlying MAS-Seq workflow overview
+### Underlying MAS-Seq workflow overview
 
 <details>
 <summary>Expand</summary>
@@ -77,26 +77,22 @@ nice snakemake --use-conda --snakefile lore/Snakefile --configfile config.yaml -
 
 
 ## WIP:
-  - TE pipelines:
-    - https://doi.org/10.1016/j.isci.2023.108214
-      - https://github.com/javiercguard/teNanoporePipeline  # usable
-      - RepeatMaster
-      - Dfam
-    - https://doi.org/10.1093/nar/gkac794
-      - https://github.com/bergmanlab/TELR  # looks good!
+  - Optional: de novo Repeat library construction pipelines
+    - https://doi.org/10.1186/s12864-021-08117-9
+      - https://github.com/kacst-bioinfo-lab/TE_ideintification_pipeline  # nice workflow figure
+      - could be useful for non-model organisms/strains
+  - RE/TE pipelines
     - https://doi.org/10.1186/s13059-023-02911-2
       - https://github.com/DrosophilaGenomeEvolution/TrEMOLO  # looks good + snakemake!
+    - https://doi.org/10.1093/nar/gkac794
+      - https://github.com/bergmanlab/TELR  # looks good! pure python
+    - https://doi.org/10.1016/j.isci.2023.108214
+      - https://github.com/javiercguard/teNanoporePipeline  # usable
+      - Tools: RepeatMaster, Dfam
     - https://doi.org/10.1186/s13100-017-0088-x
       - LoRTE  # python 2.7, dead link
-    - de novo Repeat library construction:
-      - could be useful for non-model organisms/strains
-      - https://doi.org/10.1186/s12864-021-08117-9
-      - https://github.com/kacst-bioinfo-lab/TE_ideintification_pipeline  # nice workflow figure
-  
-  - what to do with pbmm2 unmapped reads:
-    - second pass to the alignment stage to specifically map repeat elements?
-    - omit?
+
+## TODO:
   - integrate genomepy to:
-    - get a genome
-    - create the minimap2 index
-    - get an annotation
+    - get genome & gene annotation
+  - figure out the requirements for a "good" reference genome & gene annotation
