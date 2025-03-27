@@ -187,7 +187,7 @@ rule isoseq_groupdedup:
     output:
         bam=expand("{isoseq_dedup_dir}/{{sample}}.bam", **config),
         pbi=expand("{isoseq_dedup_dir}/{{sample}}.bam.pbi", **config),
-        fasta=expand("{isoseq_dedup_dir}/{{sample}}.fasta", **config),  # TODO: use for separate analysis?
+        fasta=expand("{isoseq_dedup_dir}/{{sample}}.fasta", **config),
     log:
         expand("{isoseq_dedup_dir}/{{sample}}.log", **config),
     benchmark:
