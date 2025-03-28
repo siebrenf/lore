@@ -1,5 +1,13 @@
 <!-- ![broken image](imgs/logo.png | heigth=200) -->
-<img src="imgs/logo.png" height="225">
+<!-- <img src="imgs/logo.png" height="225"> -->
+<!-- <img src="imgs/LoRE9.png" height="225"> -->
+<!-- <img src="imgs/LoRE10.png" height="225"> -->
+<!-- <img src="imgs/LoRE11.png" height="225"> -->
+<picture>
+ <source media="(prefers-color-scheme: dark)" srcset="imgs/logo_darkmode.png">
+ <img alt="LoRE logo" src="imgs/logo_lightmode.png">
+</picture>
+
 
 # Long-read Repeat Element pipeline 
 for PacBio single-cell MAS-seq data
