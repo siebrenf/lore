@@ -30,7 +30,7 @@ for PacBio single-cell MAS-seq data
 <details>
 <summary>Expand</summary>
 
-![broken image](imgs/workflow.png)
+![broken image](imgs/masseq_workflow.png)
 </details>
 
 
@@ -96,6 +96,9 @@ nice snakemake --use-conda --snakefile lore/Snakefile --configfile config.yaml -
   - implement TE/RE detection using the output of either:
     - `isoseq_groupdedup` (an unaligned FASTA and BAM file)
     - `pbmm2_align` (an aligned BAM file)
+      - current settings: 
+        - multimapped reads are included: reads are assigned to any number of locations (nice for TEs).
+        - unmapped reads are included.
     - repositories of interest to this purpose have been marked below.
   - learn more about the `pigeon classify` filter settings (for the gene level, some filters may be more lenient).
   - integrate genomepy to get a genome & gene annotation.
@@ -107,6 +110,9 @@ nice snakemake --use-conda --snakefile lore/Snakefile --configfile config.yaml -
       - https://github.com/kacst-bioinfo-lab/TE_ideintification_pipeline  # nice workflow figure
       - could be useful for non-model organisms/strains
   - RE/TE pipelines
+    - SoloTE
+      - easy to use: use pbmm2 output 
+      - https://github.com/bvaldebenitom/SoloTE
     - TrEMOLO
       - looks good + snakemake!
       - https://doi.org/10.1186/s13059-023-02911-2
