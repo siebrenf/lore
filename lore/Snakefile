@@ -15,26 +15,25 @@ include: "7_solote.smk"
 
 rule all:
     input:
-        f'{config["solote_dir"]}/{config["genome"]}.out.fa',
-        # # SoloTE
-        # [f'{config["solote_dir"]}/{sample}_does_not_exist.bam' for sample in config["samples"]],
-        # # bigwigs
-        # [f'{config["pbmm2_dir"]}/{sample}.bw' for sample in config["samples"]]
-        # if config.get("bigwigs", True)
-        # else [],
-        # # seurat/scanpy
-        # [
-        #     f'{config["seurat_dir"]}/{sample}/{sample}.info.csv'
-        #     for sample in config["samples"]
-        # ],
-        # # QC report
-        # [f'{config["qc_dir"]}/multiqc_report.html']
-        # if config.get("qc_report", True)
-        # else [],
-        # # web share
-        # [f'{config["www_dir"]}/{sample}.bw' for sample in config["samples"]]
-        # if config.get("bigwigs", True) and config.get("www_dir")
-        # else [],
-        # [f'{config["www_dir"]}/multiqc_report.html']
-        # if config.get("qc_report", True) and config.get("www_dir")
-        # else [],
+        # SoloTE  # TODO: get the real output
+        [f'{config["solote_dir"]}/{sample}_does_not_exist.bam' for sample in config["samples"]],
+        # bigwigs
+        [f'{config["pbmm2_dir"]}/{sample}.bw' for sample in config["samples"]]
+        if config.get("bigwigs", True)
+        else [],
+        # seurat/scanpy
+        [
+            f'{config["seurat_dir"]}/{sample}/{sample}.info.csv'
+            for sample in config["samples"]
+        ],
+        # QC report
+        [f'{config["qc_dir"]}/multiqc_report.html']
+        if config.get("qc_report", True)
+        else [],
+        # web share
+        [f'{config["www_dir"]}/{sample}.bw' for sample in config["samples"]]
+        if config.get("bigwigs", True) and config.get("www_dir")
+        else [],
+        [f'{config["www_dir"]}/multiqc_report.html']
+        if config.get("qc_report", True) and config.get("www_dir")
+        else [],

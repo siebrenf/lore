@@ -1,6 +1,9 @@
 from snakemake.io import expand
 
 
+# ruleorder: solote_precompiled_database > solote_custom_database
+
+
 rule dfam:
     """
     Downloads a TE database partition required to run RepeatMasker.
@@ -11,7 +14,7 @@ rule dfam:
       - https://github.com/Dfam-consortium/RepeatMasker
     """
     output:
-        md5=expand("{solote_dir}/{dfam_partition}.h5.gz.md5",**config),
+        proof=expand("{solote_dir}/{dfam_partition}.done",**config)
     log:
         expand("{solote_dir}/{dfam_partition}.log",**config),
     params:
@@ -22,35 +25,21 @@ rule dfam:
     shell:
         """
         URL=https://www.dfam.org/releases/current/families/FamDB/{params.partition}.h5.gz
-        echo "Source ${{URL}}" > {log}
+        echo "Source: ${{URL}}" > {log}
         
-        DB=${{CONDA_PREFIX}}/share/RepeatMasker/Libraries/famdb/{params.partition}.h5.gz
-        echo "Targer ${{DB}}" >> {log}
-        
-        # wget \
-        #     --quiet \
-        #     --output-document=${{DB}} \
-        #     ${{URL}}
-        
-        wget \
-            --quiet \
-            --output-document={output.md5} \
-            ${{URL}}.md5
-        MD5=$(md5sum ${{DB}} | awk '{{print $1}}')
-        SUCCESS=$(grep --count -F $MD5 {output.md5})
-        
-        # Add md5sum check to the log file
-        echo "MD5sums:" >> {log}
-        md5sum ${{DB}} | awk '{{print $1}}' >> {log}
-        cat {output.md5} | awk '{{print $1}}' >> {log}
-        echo "" >> {log}
-        
-        # Use the md5sum check to validate the download
-        if [ ! $SUCCESS == 1 ]; then
-            exit 1
+        DB=${{CONDA_PREFIX}}/share/RepeatMasker/Libraries/famdb/{params.partition}.h5
+        echo "Target: ${{DB}}" >> {log}
+
+        if [ ! -f ${{DB}} ]; then
+            wget \
+                --quiet \
+                --output-document=${{DB}}.gz \
+                ${{URL}}
+            
+            gunzip ${{DB}}.gz
         fi
-        
-        gunzip ${{DB}}
+
+        touch {output.proof}
         """
 
 
@@ -60,8 +49,9 @@ rule repeatmasker:
     """
     input:
         genome=config["genome_fasta"],
-        db=rules.dfam.output,
+        proof=rules.dfam.output,
     output:
+        # TODO: add additional output
         fasta=expand("{solote_dir}/{genome}.out.fa",**config),
     log:
         expand("{solote_dir}/{genome}_repeatmasker.log",**config),
@@ -71,15 +61,18 @@ rule repeatmasker:
         outdir=config["solote_dir"],
         species=config["species"],
         flags=config["repeatmasker"],
-    threads: 4
+    threads: 124
     conda:
         "envs/repeatmasker.yaml"
     shell:
         """
+        # Each parallel job uses 4 threads
+        let PA={threads}/4
+
         RepeatMasker \
           -species "{params.species}" \
           -dir {params.outdir} \
-          -pa {threads} \
+          -pa ${{PA}} \
           {params.flags} \
           {input.genome} \
           > {log} 2>&1
@@ -103,10 +96,10 @@ rule solote_custom_database:
 #     Download a precompiled RepeatMasker .fa.out.gz file.
 #     RepeatMasker was run with the -s (sensitive) setting.
 #     SoloTE converts the .fa.out.gz to a BED file.
-#
+
 #     List all precompiled databases with:
 #       python ${CONDA_PREFIX}/bin/SoloTE_RepeatMasker_to_BED.py --list
-#
+
 #     Sources:
 #       - https://github.com/bvaldebenitom/SoloTE
 #       - https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/
@@ -124,11 +117,11 @@ rule solote_custom_database:
 #         """
 #         CURDIR=$(pwd)
 #         cd {params.outdir}
-#
+
 #         python \
 #           ${{CONDA_PREFIX}}/bin/SoloTE_RepeatMasker_to_BED.py \
 #           --genome {params.genome} > {log} 2>&1
-#
+
 #         cd $CURDIR
 #         """
 
@@ -143,10 +136,9 @@ rule solote:
     """
     input:
         bam=rules.pbmm2_align.output.bam,
-        # bed=rules.solote_database.output.bed,
         bed=rules.solote_custom_database.output.bed,
     output:
-        bed=expand("{solote_dir}/{{sample}}_does_not_exist.bam",**config),
+        bed=expand("{solote_dir}/{{sample}}_does_not_exist.bam",**config),  # TODO: replace with actual output
     log:
         expand("{solote_dir}/{{sample}}.log",**config),
     benchmark:
