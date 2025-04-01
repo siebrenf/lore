@@ -63,7 +63,7 @@ conda activate lore
 ```
 
 Update the `config.yaml`. 
-- Adapters, primers and barcodes for the 5' Kinnex kit can be downloaded by lore, or can be placed inside the results directory. 
+- Adapters, primers and barcodes for the 5' Kinnex kit can be downloaded by LoRE, or can be placed inside the results directory. 
 - The results directory (as well as any other directory) can be set in the config.
   The default results directory is `./results`.
 - The genome and gene annotation need to be obtained manually.

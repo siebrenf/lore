@@ -69,6 +69,10 @@ rule repeatmasker:
         # Each parallel job uses 4 threads
         let PA={threads}/4
 
+        # RepeatMasker creates a temp directory in the current working directory
+        CURDIR=$(pwd)
+        cd {params.outdir}
+
         RepeatMasker \
           -species "{params.species}" \
           -dir {params.outdir} \
@@ -76,6 +80,8 @@ rule repeatmasker:
           {params.flags} \
           {input.genome} \
           > {log} 2>&1
+
+        cd $CURDIR
         """
 
 
