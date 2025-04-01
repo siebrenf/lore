@@ -13,6 +13,7 @@ genome_fasta:
 gene_annotation_gtf:
   # /scratch/siebrenf/lore/GRCh38/GRCh38.annotation.gtf
   /bank/genomes/GRCh38/GRCh38.annotation.gtf
+solote_genome: "hg38"
 mitochondria: "chrM"
 
 adapters:

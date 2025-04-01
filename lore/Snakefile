@@ -10,10 +10,13 @@ include: "3_pbmm2.smk"
 include: "4_pigeon.smk"
 include: "5_qc.smk"
 include: "6_deeptools.smk"
+include: "7_solote.smk"
 
 
 rule all:
     input:
+        # SoloTE
+        [f'{config["solote_dir"]}/{sample}_does_not_exist.bam' for sample in config["samples"]],
         # bigwigs
         [f'{config["pbmm2_dir"]}/{sample}.bw' for sample in config["samples"]]
         if config.get("bigwigs", True)

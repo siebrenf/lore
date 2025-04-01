@@ -30,6 +30,7 @@ for directory in [
     # "pigeon_filter_dir",
     "pigeon_report_dir",
     "seurat_dir",  # 4-SeuratMatrix/
+    "solote_dir",
     "qc_dir",
 ]:
     if config.get(directory) is None:

@@ -112,6 +112,7 @@ nice snakemake --use-conda --snakefile lore/Snakefile --configfile config.yaml -
   - RE/TE pipelines
     - SoloTE
       - easy to use: use pbmm2 output 
+      - https://doi.org/10.1038/s42003-022-04020-5
       - https://github.com/bvaldebenitom/SoloTE
     - TrEMOLO
       - looks good + snakemake!
