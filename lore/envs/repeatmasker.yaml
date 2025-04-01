@@ -1,0 +1,7 @@
+name: repeatmasker
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - bioconda::repeatmasker
+  - conda-forge::conda-ecosystem-user-package-isolation=1.0
